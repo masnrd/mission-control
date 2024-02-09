@@ -4,7 +4,7 @@ Utilities for interacting with the drones.
 """
 import struct
 from enum import IntEnum
-from typing import Union, NewType, Dict
+from typing import Union, NewType, Dict, Any
 
 from maplib import LatLon
 from ros2_stub import Command
@@ -104,16 +104,23 @@ class DroneState:
         return self._last_command
 
     def toJSON(self) -> Dict:
-        lat, lon = "null", "null"
+        lat, lon = None, None
         if self._position is not None:
             lat, lon = self._position.lat, self._position.lon
         command = "-"
         if self._last_command is not None:
             command = DroneCommandId(self._last_command.command_id).name
-        ret = {}
-        for k, v in self.__dict__.items():
-            ret[k[1:]] = v
-        ret["last_command"] = command
+
+        ret = {
+            "drone_id": str(self.get_drone_id()),
+            "mode": str(self.get_mode().name),
+            "battery_percentage": self.get_battery_percentage(),
+            "estimated_rtt": self.get_estimated_rtt(),
+            "position": {
+                "lat": lat, "lon": lon
+            },
+            "last_command": command,
+        }
         return ret
     
     def __repr__(self) -> str:
