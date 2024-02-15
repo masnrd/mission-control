@@ -1,5 +1,6 @@
 from enum import IntEnum
 from datetime import datetime
+import json
 
 class MissionStage(IntEnum):
     """ Current mode reported of mission """
@@ -15,6 +16,12 @@ class Mission:
     def __init__(self):
         self.stage = MissionStage.SETUP
         self.duration = datetime.now()
-        self.hotspots = {} # Dic of idx : dictionary e.g. [{"lat":1.344939529563976,"lng":103.95868822754284},{"lat":1.344939529563976,"lng":103.95883309151527}]
+        self.hotspots = set()
         self.cluster_centres = {}
         self.cluster_centres_to_explore = [] # Queue of clusters to explore
+
+class SetEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, set):
+            return list(obj)
+        return json.JSONEncoder.default(self, obj)

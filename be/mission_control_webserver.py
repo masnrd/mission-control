@@ -16,7 +16,7 @@ from queue import Queue
 from pathlib import Path
 from assigner.simplequeueassigner import SimpleQueueAssigner
 
-from mission_utils import Mission
+from mission_utils import Mission, SetEncoder
 from drone_utils import DroneState, DroneId
 from drone_utils import DroneCommand, DroneCommand_SEARCH_SECTOR, DroneCommand_MOVE_TO
 from run_clustering import run_clustering
@@ -46,6 +46,8 @@ class MCWebServer:
         # Set up Endpoints
         self.app.add_url_rule("/", view_func=self.route_index)
         self.app.add_url_rule("/api/info", view_func=self.route_info)
+        self.app.add_url_rule("/hotspot/add", methods=["POST"], view_func=self.route_add_hotspot)
+        self.app.add_url_rule("/hotspot/delete", methods=["POST"], view_func=self.route_delete_hotspot)
         self.app.add_url_rule("/api/action/moveto", view_func=self.route_action_moveto)
         self.app.add_url_rule("/api/action/search", view_func=self.route_action_search)
         self.app.add_url_rule("/api/setup/run_clustering", methods=["POST"], view_func=self.route_run_clustering)
@@ -63,7 +65,7 @@ class MCWebServer:
 
         ret = {
             "drones": drones,
-            "hotspots": self.mission.hotspots,  # Assuming this is already serializable
+            "hotspots": list(self.mission.hotspots),  # Assuming this is already serializable
             "clusters": self.mission.cluster_centres,  # Assuming this is already serializable
         }
         jsonify(ret)
@@ -102,11 +104,26 @@ class MCWebServer:
         self.commands.put_nowait(command_tup)
         
         return {}, 200
+    
+    def route_add_hotspot(self):
+        data = request.form.to_dict()
+        hotspot = json.loads(data.get('hotspot_position', None))
+        self.mission.hotspots.add((hotspot["latlng"]["lat"],hotspot["latlng"]["lng"])) # Should be a set here
+        return {}, 200
+    
+    def route_delete_hotspot(self):
+        data = request.form.to_dict()
+        print(f'data{data}')
+        hotspot = json.loads(data.get('hotspot_position', None))
+        print(hotspot)
+        print(self.mission.hotspots, (hotspot["latlng"][0],hotspot["latlng"][1]), (hotspot["latlng"][0],hotspot["latlng"][1]) in self.mission.hotspots)
+        self.mission.hotspots.remove((hotspot["latlng"][0],hotspot["latlng"][1])) # Should be a set here
+        return {}, 200
 
     def route_run_clustering(self):
         data = request.form.to_dict()
         hotspots_location = data.get("hotspots_position", None)
-        hotspots_location = json.loads(hotspots_location)
+        hotspots_location = json.loads(hotspots_location, cls=SetEncoder)
         self.mission.hotspots = {i: {"position": hotspots_location[i]["position"]} for i in range(len(hotspots_location))}
         cluster_centres = run_clustering(hotspots_location)
         return cluster_centres
