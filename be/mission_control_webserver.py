@@ -50,8 +50,7 @@ class MCWebServer:
         self.app.add_url_rule("/hotspot/delete", methods=["POST"], view_func=self.route_delete_hotspot)
         self.app.add_url_rule("/api/action/moveto", view_func=self.route_action_moveto)
         self.app.add_url_rule("/api/action/search", view_func=self.route_action_search)
-        self.app.add_url_rule("/api/setup/run_clustering", methods=["POST"], view_func=self.route_run_clustering)
-        self.app.add_url_rule("/api/setup/confirm_clustering", methods=["POST"], view_func=self.route_confirm_clustering)
+        self.app.add_url_rule("/api/setup/run_clustering", view_func=self.route_run_clustering)
         self.app.add_url_rule("/api/setup/start_operation", view_func=self.route_start_operation)
         self.app.after_request(self.add_headers)
 
@@ -113,35 +112,21 @@ class MCWebServer:
     
     def route_delete_hotspot(self):
         data = request.form.to_dict()
-        print(f'data{data}')
         hotspot = json.loads(data.get('hotspot_position', None))
-        print(hotspot)
-        print(self.mission.hotspots, (hotspot["latlng"][0],hotspot["latlng"][1]), (hotspot["latlng"][0],hotspot["latlng"][1]) in self.mission.hotspots)
         self.mission.hotspots.remove((hotspot["latlng"][0],hotspot["latlng"][1])) # Should be a set here
         return {}, 200
 
     def route_run_clustering(self):
-        data = request.form.to_dict()
-        hotspots_location = data.get("hotspots_position", None)
-        hotspots_location = json.loads(hotspots_location, cls=SetEncoder)
-        self.mission.hotspots = {i: {"position": hotspots_location[i]["position"]} for i in range(len(hotspots_location))}
-        cluster_centres = run_clustering(hotspots_location)
+        cluster_centres = run_clustering(self.mission.hotspots)
+        self.mission.cluster_centres = cluster_centres
+        self.mission.cluster_centres_to_explore = [cluster for cluster in cluster_centres.values()]
         return cluster_centres
-    
-    def route_confirm_clustering(self) -> bool:
-        """"Update mission clusters centres"""
-        data = request.form.to_dict()
-        confirmed_clusters = json.loads(data.get("clusters", None))
-        self.mission.cluster_centres = confirmed_clusters
-        self.mission.cluster_centres_to_explore += confirmed_clusters
-        return {}, 200
     
     def route_start_operation(self):
         """Run assignment on drones in drone state, cluster centers and command drones to search sector"""
-
         assignments = self.assigner.fit(self.mission.cluster_centres_to_explore, self.drone_states)
         for drone_id, cluster in assignments.items():
-            command_tup = (drone_id, DroneCommand_SEARCH_SECTOR(LatLon(cluster["position"]["lat"], cluster["position"]["lng"]), None))
+            command_tup = (drone_id, DroneCommand_SEARCH_SECTOR(LatLon(cluster[0][0], cluster[0][1]), None))
             self.commands.put_nowait(command_tup)
         return {}, 200        
 
