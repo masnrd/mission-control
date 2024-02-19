@@ -17,11 +17,6 @@ import DroneMarker from "./DroneMarker";
 
 import L from "leaflet";
 import ReactDOMServer from "react-dom/server";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-
-import AddLocationIcon from "@mui/icons-material/AddLocation";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
 import PlaceIcon from "@mui/icons-material/Place";
 
