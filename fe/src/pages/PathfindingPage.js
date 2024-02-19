@@ -7,6 +7,7 @@ export default function Pathfinding() {
   const [drones, setDrones] = useState([]);
   const [hotspots, setHotspots] = useState([]);
   const [clusters, setClusters] = useState([]);
+  const [clustersToExplore, setClustersToExplore] = useState([]);
 
   const url = "http://127.0.0.1:5000/api/info";
   useEffect(() => {
@@ -19,6 +20,11 @@ export default function Pathfinding() {
         setHotspots(parsedHotspots);
         const parsedClusters = Object.values(data["clusters"]);
         setClusters(parsedClusters);
+        const parsedClusterToExplore = Object.values(
+          data["clusters_to_explore"]
+        );
+        setClustersToExplore(parsedClusterToExplore);
+        console.log("To explore:", clustersToExplore);
       })
       .catch((error) => console.error("Error in fetching drone data:", error));
   });
@@ -31,6 +37,7 @@ export default function Pathfinding() {
           drones={drones}
           hotspots={hotspots}
           clusters={clusters}
+          clustersToExplore={clustersToExplore}
         />
       )}
       <Map

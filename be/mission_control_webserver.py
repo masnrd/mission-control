@@ -66,6 +66,7 @@ class MCWebServer:
             "drones": drones,
             "hotspots": list(self.mission.hotspots),  # Assuming this is already serializable
             "clusters": self.mission.cluster_centres,  # Assuming this is already serializable
+            "clusters_to_explore" : self.mission.cluster_centres_to_explore
         }
         jsonify(ret)
         return ret

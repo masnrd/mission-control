@@ -15,8 +15,15 @@ import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
+import QueueVisualization from "./QueueVisualiser.js";
 
-export default function SidebarComponent({ map, drones, hotspots, clusters }) {
+export default function SidebarComponent({
+  map,
+  drones,
+  hotspots,
+  clusters,
+  clustersToExplore,
+}) {
   const [openTab, setOpenTab] = useState("home");
   const onClose = () => {
     setOpenTab(false);
@@ -33,24 +40,14 @@ export default function SidebarComponent({ map, drones, hotspots, clusters }) {
   };
   function runClustering() {
     try {
-      const response = fetch("http://127.0.0.1:5000/api/setup/run_clustering");
-      if (response.ok) {
-        console.log("Run clustering:", response.json());
-      } else {
-        console.error("Error:", response.status, response.statusText);
-      }
+      fetch("http://127.0.0.1:5000/api/setup/run_clustering");
     } catch (error) {
       console.error("Error:", error);
     }
   }
   const assignForSearch = () => {
     try {
-      const response = fetch("http://127.0.0.1:5000/api/setup/start_operation");
-      if (response.ok) {
-        console.log("Assign for search:", response.json());
-      } else {
-        console.error("Error:", response.status, response.statusText);
-      }
+      fetch("http://127.0.0.1:5000/api/setup/start_operation");
     } catch (error) {
       console.error("Error:", error);
     }
@@ -140,6 +137,8 @@ export default function SidebarComponent({ map, drones, hotspots, clusters }) {
               Assign and Search
             </Button>
           </Box>
+          <h1>Queue</h1>
+          <QueueVisualization clusters={clustersToExplore} />
         </Tab>
       </Sidebar>
     </>
