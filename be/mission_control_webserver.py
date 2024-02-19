@@ -15,6 +15,7 @@ from typing import Dict, Tuple
 from queue import Queue
 from pathlib import Path
 from assigner.simplequeueassigner import SimpleQueueAssigner
+from detection_utils import DetectedEntity
 
 from mission_utils import Mission, SetEncoder
 from drone_utils import DroneState, DroneId
@@ -27,7 +28,7 @@ logging.getLogger("flask_cors").level = logging.ERROR
 logging.getLogger("werkzeug").level = logging.ERROR
 
 class MCWebServer:
-    def __init__(self, mission:Mission, drone_states: Dict[int, DroneState], commands: Queue[Tuple[DroneId, DroneCommand]]):
+    def __init__(self, mission:Mission, drone_states: Dict[int, DroneState], commands: Queue[Tuple[DroneId, DroneCommand]], detected_queue: Queue[DetectedEntity]):
         self.static_dir = Path("frontend")
         # Flask.logger_name = "listlogger"
         self.app = Flask(
@@ -42,6 +43,7 @@ class MCWebServer:
         self.drone_states = drone_states
         self.commands: Queue[Tuple[DroneId, DroneCommand]] = commands
         self.assigner = SimpleQueueAssigner()
+        self.detected_queue = detected_queue
 
         # Set up Endpoints
         self.app.add_url_rule("/", view_func=self.route_index)
@@ -62,11 +64,15 @@ class MCWebServer:
         for drone_id, drone_state in self.drone_states.items():
             drones[drone_id] = drone_state.toJSON()  # Ensure this method returns a serializable dictionary
 
+        while not self.detected_queue.empty():
+            self.mission.detected.append(self.detected_queue.get())
+
         ret = {
             "drones": drones,
             "hotspots": list(self.mission.hotspots),  # Assuming this is already serializable
             "clusters": self.mission.cluster_centres,  # Assuming this is already serializable
-            "clusters_to_explore" : self.mission.cluster_centres_to_explore
+            "clusters_to_explore" : self.mission.cluster_centres_to_explore,
+            "detected" : [entity.to_dict() for entity in self.mission.detected]
         }
         jsonify(ret)
         return ret

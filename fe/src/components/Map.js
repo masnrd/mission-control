@@ -19,8 +19,15 @@ import L from "leaflet";
 import ReactDOMServer from "react-dom/server";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
 import PlaceIcon from "@mui/icons-material/Place";
+import AccessibilityIcon from "@mui/icons-material/Accessibility";
 
-export default function Map({ drones, hotspots, clusters, setMap }) {
+export default function Map({
+  drones,
+  hotspots,
+  clusters,
+  detectedEntities,
+  setMap,
+}) {
   const start_position = [1.3430293739520736, 103.9591294705276];
   const [hexagons, setHexagons] = useState([]);
 
@@ -75,6 +82,18 @@ export default function Map({ drones, hotspots, clusters, setMap }) {
   const createHotSpotIcon = () => {
     const iconHtml = ReactDOMServer.renderToString(
       <WhatshotIcon style={{ color: "red", sx: 200 }} />
+    );
+    return L.divIcon({
+      html: iconHtml,
+      className: "custom-leaflet-icon", // Adjust as needed, ensure this class does minimal or no styling to avoid conflicts
+      iconSize: L.point(30, 30), // Adjust size as needed
+      iconAnchor: L.point(15, 30), // Adjust anchor as needed, consider the icon size
+    });
+  };
+
+  const createDetectionIcon = () => {
+    const iconHtml = ReactDOMServer.renderToString(
+      <AccessibilityIcon style={{ color: "bright orange", sx: 200 }} />
     );
     return L.divIcon({
       html: iconHtml,
@@ -162,6 +181,15 @@ export default function Map({ drones, hotspots, clusters, setMap }) {
               lat={drone.position.lat}
               mode={drone.mode}></DroneMarker>
           ))}
+        {detectedEntities.map((entity, index) => (
+          <Marker
+            key={index}
+            position={{
+              lat: entity.coordinates.lat,
+              lng: entity.coordinates.lon,
+            }}
+            icon={createDetectionIcon()}></Marker>
+        ))}
         {hotspots.map((hotspot, index) => (
           <Marker
             key={index}

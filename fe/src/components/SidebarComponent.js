@@ -23,6 +23,7 @@ export default function SidebarComponent({
   hotspots,
   clusters,
   clustersToExplore,
+  detectedEntities,
 }) {
   const [openTab, setOpenTab] = useState("home");
   const onClose = () => {
@@ -68,6 +69,30 @@ export default function SidebarComponent({
         <Tab id="home" header="Drones" icon={<FormatListBulletedIcon />} active>
           {drones.map((drone) => (
             <DroneStatusCard key={drone.drone_id} droneData={drone} map={map} />
+          ))}
+        </Tab>
+        <Tab
+          id="detected"
+          header="Detected"
+          icon={<FormatListBulletedIcon />}
+          active>
+          {detectedEntities.map((entity, index) => (
+            <div key={`marker-${index}`}>
+              <Box
+                sx={{
+                  marginBottom: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 2,
+                }}>
+                <AddLocationIcon color="primary" />
+                <Typography>
+                  Detected {index}: {entity.coordinates.lat},{" "}
+                  {entity.coordinates.lon}
+                </Typography>
+              </Box>
+              {index < detectedEntities.length - 1 && <Divider />}
+            </div>
           ))}
         </Tab>
         <Tab

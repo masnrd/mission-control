@@ -1,6 +1,9 @@
 from enum import IntEnum
 from datetime import datetime
 import json
+from typing import List
+
+from detection_utils import DetectedEntity
 
 class MissionStage(IntEnum):
     """ Current mode reported of mission """
@@ -19,6 +22,7 @@ class Mission:
         self.hotspots = set()
         self.cluster_centres = {}
         self.cluster_centres_to_explore = [] # Queue of clusters to explore
+        self.detected:List[DetectedEntity] = []
 
 class SetEncoder(json.JSONEncoder):
     def default(self, obj):

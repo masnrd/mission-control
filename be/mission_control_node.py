@@ -4,7 +4,8 @@ from queue import Queue, Empty
 from typing import Dict, Tuple
 
 from maplib import LatLon
-from drone_utils import DroneId, DroneState, DroneCommand, DroneMode, DroneCommandId
+from drone_utils import DroneId, DroneState, DroneCommand, DroneCommandId
+from detection_utils import DetectedEntity
 from mission_control_webserver import MCWebServer
 from fake_drone_system import DroneSystem
 from mission_utils import Mission
@@ -16,9 +17,9 @@ HOME_POSITION = LatLon(1.3399775009363866, 103.96258672159254)
 
 
 class MCNode:
-    def __init__(self, drone_states: Dict[DroneId, DroneState], commands: Queue[Tuple[DroneId, DroneCommand]]):
+    def __init__(self, drone_states: Dict[DroneId, DroneState], commands: Queue[Tuple[DroneId, DroneCommand]], detected_queue: Queue[DetectedEntity]):
         self.logger = logging.getLogger("mission_control")
-        self.drone_sys = DroneSystem(drone_states, HOME_POSITION)
+        self.drone_sys = DroneSystem(drone_states, HOME_POSITION, detected_queue)
         self.drone_states = drone_states
 
         # Initialise command queue
@@ -64,18 +65,19 @@ def main(args=None):
         DroneId(4): DroneState(4),
     }
     commands: Queue[Tuple[DroneId, DroneCommand]] = Queue()
+    detected_queue: Queue[DetectedEntity] = Queue()
 
     # Start web server
-    webserver = MCWebServer(mission, drone_states, commands)
+    webserver = MCWebServer(mission, drone_states, commands, detected_queue)
     webserver_thread = threading.Thread(target=webserver.run, daemon=True)
     webserver_thread.start()
 
     # Start rclpy node
-    mcnode = MCNode(drone_states, commands)
+    mcnode = MCNode(drone_states, commands, detected_queue)
     mcnode.start_node()
 
     # Start drones
-    drone_sys = DroneSystem(drone_states, HOME_POSITION)
+    drone_sys = DroneSystem(drone_states, HOME_POSITION, detected_queue=detected_queue)
     drone_sys.start()
     drone_sys.connect_drones()
 
