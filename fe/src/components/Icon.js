@@ -29,7 +29,7 @@ const createHotSpotIcon = () => {
       html: iconHtml,
       className: "custom-leaflet-icon",
       iconSize: L.point(30, 30),
-      iconAnchor: L.point(15, 30),
+      iconAnchor: L.point(15, 15),
     });
   };
 
@@ -41,7 +41,7 @@ const createHotSpotIcon = () => {
       html: iconHtml,
       className: "custom-leaflet-icon",
       iconSize: L.point(30, 30),
-      iconAnchor: L.point(15, 30),
+      iconAnchor: L.point(15, 15),
     });
   };
 
@@ -53,7 +53,7 @@ const createHotSpotIcon = () => {
       html: iconHtml,
       className: "custom-leaflet-cluster-icon",
       iconSize: L.point(30, 30),
-      iconAnchor: L.point(15, 30),
+      iconAnchor: [15, 15],
     });
   };
   const createNumberIcon = (number) => {
@@ -62,7 +62,7 @@ const createHotSpotIcon = () => {
       html: iconHtml,
       className: "my-custom-icon",
       iconSize: [30, 30],
-      iconAnchor: [15, 30],
+      iconAnchor: [15, 15],
     });
   };
 
