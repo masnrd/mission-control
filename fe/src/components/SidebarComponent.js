@@ -6,16 +6,17 @@ import DroneStatusCard from "./DroneStatusCard.js";
 import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AddIcon from "@mui/icons-material/Add";
-import AddLocationIcon from "@mui/icons-material/AddLocation";
+import WhatshotIcon from "@mui/icons-material/Whatshot";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
-
+import PlaceIcon from "@mui/icons-material/Place";
+import AccessibilityIcon from "@mui/icons-material/Accessibility";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import Divider from "@mui/material/Divider";
 import Button from "@mui/material/Button";
 import QueueVisualization from "./QueueVisualiser.js";
+
 
 export default function SidebarComponent({
   map,
@@ -85,7 +86,7 @@ export default function SidebarComponent({
                   alignItems: "center",
                   gap: 2,
                 }}>
-                <AddLocationIcon color="primary" />
+                <AccessibilityIcon style={{ color: "bright orange", sx: 200 }} />
                 <Typography>
                   Detected {index}: ({entity.coordinates.lat.toFixed(5)}, {entity.coordinates.lon.toFixed(5)})
                 </Typography>
@@ -110,7 +111,7 @@ export default function SidebarComponent({
                     alignItems: "center",
                     gap: 2,
                   }}>
-                  <AddIcon color="primary" />
+                  <WhatshotIcon style={{ color: "red", sx: 200 }} />
                   <Typography>
                     Position: ({hotspot[0].toFixed(5)}, {hotspot[1].toFixed(5)})
                   </Typography>
@@ -133,7 +134,7 @@ export default function SidebarComponent({
                     alignItems: "center",
                     gap: 2,
                   }}>
-                  <AddLocationIcon color="primary" />
+                  <PlaceIcon style={{ color: "blue", sx: 200 }} />
                   <Typography>
                     Position: ({cluster[0][0].toFixed(5)}, {cluster[0][1].toFixed(5)})
                   </Typography>
