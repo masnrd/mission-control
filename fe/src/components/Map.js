@@ -22,7 +22,7 @@ export default function Map({
                               detectedEntities,
                               setMap,
                             }) {
-  const start_position = [1.3430293739520736, 103.9591294705276];
+  const start_position = [1.3399775009363866, 103.96258672159254];
   // const [hexagons, setHexagons] = useState([]);
   // function H3Overlay() {
   //   const map = useMapEvents({
