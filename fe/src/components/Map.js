@@ -3,9 +3,6 @@ import {
   MapContainer,
   TileLayer,
   useMapEvents,
-  GeoJSON,
-  LayersControl,
-  FeatureGroup,
   Marker,
   Popup,
   Circle,
@@ -14,6 +11,7 @@ import "leaflet/dist/leaflet.css";
 // import {polygonToCells, cellToBoundary} from "h3-js";
 import "./Map.css";
 import Icons from "./Icon";
+import FakeDetection from "./FakeDetection";
 
 
 export default function Map({
@@ -24,44 +22,7 @@ export default function Map({
                               setMap,
                             }) {
   const start_position = [1.3430293739520736, 103.9591294705276];
-  const [hexagons, setHexagons] = useState([]);
-
-  function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
-    var R = 6371; // Radius of the earth in km
-    var dLat = deg2rad(lat2 - lat1);  // deg2rad below
-    var dLon = deg2rad(lon2 - lon1);
-    var a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2)
-    ;
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    var d = R * c; // Distance in km
-    return d * 1000; // Convert to meters
-  }
-
-  function deg2rad(deg) {
-    return deg * (Math.PI / 180)
-  }
-
-  function simpleHash(lat, lng) {
-    const str = `${lat}:${lng}`;
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      const char = str.charCodeAt(i);
-      hash = (hash << 5) - hash + char;
-      hash = hash & hash;
-    }
-    return hash;
-  }
-
-  function shouldDisplayEntity(entity, threshold = 0.3) {
-    const hash = simpleHash(entity.coordinates.lat, entity.coordinates.lon);
-    const pseudoRandom = Math.abs(hash % 100) / 100;
-    return pseudoRandom < threshold;
-  }
-
-
+  // const [hexagons, setHexagons] = useState([]);
   // function H3Overlay() {
   //   const map = useMapEvents({
   //     dragend: () => updateHexagons(),
@@ -202,15 +163,9 @@ export default function Map({
             />
           </div>
         ))}
-        {detectedEntities.filter(entity => {
-          const isWithinCluster = clusters.some(cluster =>
-            getDistanceFromLatLonInM(entity.coordinates.lat, entity.coordinates.lon, cluster[0][0], cluster[0][1]) <= cluster[1]
-          );
-          if (isWithinCluster) return true; // 100% displaying detection inside cluster
-          return shouldDisplayEntity(entity, 0.1); // 10% displaying detection outside cluster
-        }).map((entity, index) => (
+        {detectedEntities.filter(entity => FakeDetection.shouldDisplayEntity(entity, clusters, 0.3)).map((entity, index) => (
           <Marker
-            key={index}
+            key={`entity-marker-${index}`}
             position={{
               lat: entity.coordinates.lat,
               lng: entity.coordinates.lon,

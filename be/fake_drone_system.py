@@ -184,7 +184,7 @@ class Drone:
         DICSOVERY_PROBABILITY = 0.02
         guess = random.random()
         if guess < DICSOVERY_PROBABILITY:
-            self.log(f"Drone {self.drone_id} detected at {self.drone_states[self.drone_id].get_position(), datetime.now()}")
+            # self.log(f"Drone {self.drone_id} detected at {self.drone_states[self.drone_id].get_position(), datetime.now()}")
             self.detected.put(DetectedEntity(drone_id=self.drone_id, coordinates=self.drone_states[self.drone_id].get_position(), time_found=datetime.now()))
     
 class DroneSystem(metaclass=_SingletonMeta):
