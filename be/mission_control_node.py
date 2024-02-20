@@ -9,13 +9,11 @@ from detection_utils import DetectedEntity
 from mission_control_webserver import MCWebServer
 from fake_drone_system import DroneSystem
 from mission_utils import Mission
+from constants import HOME_POSITION
 
 logging.basicConfig(encoding='utf-8', level=logging.DEBUG)
 
 COMMAND_CHECK_INTERVAL = 1
-HOME_POSITION = LatLon(1.3399775009363866, 103.96258672159254)
-
-
 class MCNode:
     def __init__(self, drone_states: Dict[DroneId, DroneState], commands: Queue[Tuple[DroneId, DroneCommand]], detected_queue: Queue[DetectedEntity]):
         self.logger = logging.getLogger("mission_control")

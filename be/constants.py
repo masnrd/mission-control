@@ -1,0 +1,3 @@
+from maplib import LatLon
+
+HOME_POSITION = LatLon(1.3399775009363866, 103.96258672159254)

@@ -10,6 +10,8 @@ from threading import Lock, Event, RLock, Thread
 from typing import Dict, Tuple, Any
 from queue import Queue
 from time import sleep
+
+from constants import HOME_POSITION
 from detection_utils import DetectedEntity
 
 from drone_utils import DroneId, DroneState, DroneMode, DroneCommand, DroneCommandId
@@ -100,8 +102,12 @@ class Drone:
                     case DroneMode.SEARCH:
                         if self.pathfinder is None:
                             raise NotImplementedError(f"Drone {self.drone_id} in SEARCH mode, but no pathfinder object found")
-                        
-                        self.target_pos = self.pathfinder.get_next_waypoint(self.target_pos)
+                        next_pos = self.pathfinder.get_next_waypoint(self.target_pos)
+                        if next_pos:
+                            self.target_pos = next_pos
+                        else:
+                            self.set_drone_mode(DroneMode.TRAVEL, DroneMode.IDLE)
+                            self.set_drone_target_pos(HOME_POSITION.lat, HOME_POSITION.lon)
                     case DroneMode.RTB:
                         self.set_drone_mode(self.next_mode)
                 return

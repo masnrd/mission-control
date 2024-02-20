@@ -48,6 +48,8 @@ class PathfinderState:
     def get_next_waypoint(self, cur_pos: LatLon) -> LatLon:
         cur_tup = (cur_pos.lat, cur_pos.lon)
         next_tup = self._pathfinder.find_next_step(cur_tup, self._prob_map)
+        if not next_tup:
+            return None
         return LatLon(next_tup[0], next_tup[1])
     
     def found_signals(self, cur_pos: LatLon, signal_count: int):
@@ -61,6 +63,8 @@ class PathFinder(ABC):
         """
         self.res = res
         self.centre_hex = h3.geo_to_h3(centre[0], centre[1], resolution=self.res)
+        self.max_step = 10
+        self.step_count = 0
 
     @abstractmethod
     def find_next_step(self, current_position: Tuple[float, float], prob_map: np.ndarray) -> Tuple[float, float]:
@@ -97,6 +101,9 @@ class OutwardSpiralPathFinder(PathFinder):
 
     # Implementation of abstract method that returns next waypoint
     def find_next_step(self, current_position: tuple[float, float], prob_map: dict) -> tuple[float, float]:
+        self.step_count += 1
+        if self.step_count > self.max_step:
+            return None
         current_position_ij = h3.experimental_h3_to_local_ij(self.centre_hex, h3.geo_to_h3(
             current_position[0], current_position[1], resolution=self.res))
 
