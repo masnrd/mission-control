@@ -3,7 +3,6 @@ import logging
 from queue import Queue, Empty
 from typing import Dict, Tuple
 
-from maplib import LatLon
 from drone_utils import DroneId, DroneState, DroneCommand, DroneCommandId
 from detection_utils import DetectedEntity
 from mission_control_webserver import MCWebServer

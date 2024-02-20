@@ -31,6 +31,10 @@ class LatLon:
     def __repr__(self) -> str:
         return f"({self.lat}, {self.lon})"
 
+    def to_dict(self):
+        return {'lat': self.lat, 'lon': self.lon}
+
+
 @dataclass
 class PositionXY:
     x: float

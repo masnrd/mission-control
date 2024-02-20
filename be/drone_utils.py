@@ -82,6 +82,7 @@ class DroneState:
         self._estimated_rtt = 0.0
         self._position: Union[LatLon, None] = None
         self._last_command: Union[DroneCommand, None] = None
+        self.simulated_path = dict()
 
     def get_drone_id(self) -> DroneId:
         return self._drone_id
@@ -103,6 +104,9 @@ class DroneState:
         """ Returns the most recent DroneCommand sent to the drone, or None if not set yet. """
         return self._last_command
 
+    def get_simulated_path(self):
+        return self.simulated_path
+
     def toJSON(self) -> Dict:
         lat, lon = None, None
         if self._position is not None:
@@ -119,6 +123,7 @@ class DroneState:
             "position": {
                 "lat": lat, "lon": lon
             },
+            "simulated_path": self.get_simulated_path(),
             "last_command": command,
         }
         return ret

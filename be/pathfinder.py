@@ -11,6 +11,7 @@ import numpy as np
 from abc import ABC, abstractmethod
 from typing import Tuple, Dict, NewType
 from maplib import LatLon
+import copy
 
 DEFAULT_RESOLUTION = 12
 N_RINGS_CLUSTER = 16     # Defines the number of rings in a cluster by default
@@ -38,14 +39,19 @@ def init_empty_prob_map(centre_pos: LatLon, n_rings: int) -> ProbabilityMap:
 class PathfinderState:
     """ Pathfinding state utilised by the drone. """
     def __init__(self, start_pos: LatLon, prob_map: ProbabilityMap = None):
-        if prob_map is None:
-            prob_map = init_empty_prob_map(start_pos, N_RINGS_CLUSTER)
-
-        start_tup = (start_pos.lat, start_pos.lon)
-        self._pathfinder = OutwardSpiralPathFinder(DEFAULT_RESOLUTION, start_tup)  #TODO: to be set by the caller, based on the search method defined by MC
-        self._prob_map = prob_map
         self.max_step = 10
         self.step_count = 0
+        self.simulated_path = None
+        start_tup = (start_pos.lat, start_pos.lon)
+        self._pathfinder = OutwardSpiralPathFinder(DEFAULT_RESOLUTION, start_tup)  #TODO: to be set by the caller, based on the search method defined by MC
+        self._pathfinder_sim = OutwardSpiralPathFinder(DEFAULT_RESOLUTION, start_tup)
+        if prob_map is None:
+            prob_map = init_empty_prob_map(start_pos, N_RINGS_CLUSTER)
+        self._prob_map = prob_map
+        if self.simulated_path is None:
+            self.simulated_path = self.get_simulated_path(start_pos)
+
+        print("EVERYTHING INIT")
     def get_next_waypoint(self, cur_pos: LatLon) -> LatLon:
         self.step_count += 1
         if self.step_count > self.max_step:
@@ -54,6 +60,22 @@ class PathfinderState:
         cur_tup = (cur_pos.lat, cur_pos.lon)
         next_tup = self._pathfinder.find_next_step(cur_tup, self._prob_map)
         return LatLon(next_tup[0], next_tup[1])
+
+    def get_simulated_path(self, cur_pos: LatLon) -> Dict[int, Dict]:
+        sim_map = copy.deepcopy(self._prob_map)
+        step = 0
+        simulated_path = dict()
+
+        while step < self.max_step:
+            cur_tup = (cur_pos.lat, cur_pos.lon)
+            next_tup = self._pathfinder_sim.find_next_step(cur_tup, sim_map)
+
+            cur_pos = LatLon(next_tup[0], next_tup[1])
+            simulated_path[step] = cur_pos.to_dict()
+            step += 1
+
+        return simulated_path
+
     def found_signals(self, cur_pos: LatLon, signal_count: int):
         pass
 
@@ -100,7 +122,7 @@ class OutwardSpiralPathFinder(PathFinder):
         return current_ij_coord
 
     # Implementation of abstract method that returns next waypoint
-    def find_next_step(self, current_position: tuple[float, float], prob_map: dict) -> tuple[float, float]:
+    def find_next_step(self, current_position: Tuple[float, float], prob_map: Dict) -> Tuple[float, float]:
         current_position_ij = h3.experimental_h3_to_local_ij(self.centre_hex, h3.geo_to_h3(
             current_position[0], current_position[1], resolution=self.res))
 

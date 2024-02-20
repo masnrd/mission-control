@@ -145,6 +145,7 @@ class Drone:
                 self.set_drone_target_pos(target_pos.lat, target_pos.lon)
                 with self._lock:
                     self.pathfinder = PathfinderState(target_pos, None)
+                    self.drone_states[self.drone_id].simulated_path = self.pathfinder.simulated_path
         
         self.set_drone_last_command(drone_command)
             
@@ -191,6 +192,7 @@ class Drone:
         if guess < DICSOVERY_PROBABILITY:
             # self.log(f"Drone {self.drone_id} detected at {self.drone_states[self.drone_id].get_position(), datetime.now()}")
             self.detected.put(DetectedEntity(drone_id=self.drone_id, coordinates=self.drone_states[self.drone_id].get_position(), time_found=datetime.now()))
+
     
 class DroneSystem(metaclass=_SingletonMeta):
     """
