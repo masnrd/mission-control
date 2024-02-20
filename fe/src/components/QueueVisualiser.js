@@ -13,9 +13,8 @@ const QueueVisualization = ({ clusters }) => {
             <ListItem key={index} divider={index !== clusters.length - 1}>
               <ListItemText
                 primary={`Queue Index: ${index}`}
-                secondary={`Position ID -- Lon:${cluster[0][0].toFixed(
-                  5
-                )} Lat:${cluster[0][1].toFixed(5)}`}
+                secondary={`Position: (${cluster[0][0].toFixed(
+                  5)}, ${cluster[0][1].toFixed(5)})`}
               />
             </ListItem>
           </>

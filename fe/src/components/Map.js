@@ -195,7 +195,7 @@ export default function Map({
             key={index}
             position={{ lat: hotspot[0], lng: hotspot[1] }}
             icon={createHotSpotIcon()}>
-            <Popup>{`Latitude: ${hotspot[0]}, Longitude: ${hotspot[1]}`}</Popup>
+            <Popup>{`(${hotspot[0]}, ${hotspot[1]})`}</Popup>
           </Marker>
         ))}
         {clusters.map((cluster, index) => (
@@ -205,7 +205,7 @@ export default function Map({
               position={{ lat: cluster[0][0], lng: cluster[0][1] }}
               icon={createClusterIcon()}>
               <Popup>
-                {`Latitude: ${cluster[0]}, Longitude: ${cluster[0]}`}
+                {`(${cluster[0]}, ${cluster[0]})`}
               </Popup>
             </Marker>
             <Circle

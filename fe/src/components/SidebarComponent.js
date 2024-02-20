@@ -87,8 +87,7 @@ export default function SidebarComponent({
                 }}>
                 <AddLocationIcon color="primary" />
                 <Typography>
-                  Detected {index}: {entity.coordinates.lat},{" "}
-                  {entity.coordinates.lon}
+                  Detected {index}: ({entity.coordinates.lat.toFixed(5)}, {entity.coordinates.lon.toFixed(5)})
                 </Typography>
               </Box>
               {index < detectedEntities.length - 1 && <Divider />}
@@ -113,7 +112,7 @@ export default function SidebarComponent({
                   }}>
                   <AddIcon color="primary" />
                   <Typography>
-                    Latitude: {hotspot[0]} Longitude: {hotspot[1]}
+                    Position: ({hotspot[0].toFixed(5)}, {hotspot[1].toFixed(5)})
                   </Typography>
                   <IconButton
                     aria-label="delete"
@@ -136,8 +135,7 @@ export default function SidebarComponent({
                   }}>
                   <AddLocationIcon color="primary" />
                   <Typography>
-                    Lat: {cluster[0][0].toFixed(5)} Lon:{" "}
-                    {cluster[0][1].toFixed(5)}
+                    Position: ({cluster[0][0].toFixed(5)}, {cluster[0][1].toFixed(5)})
                   </Typography>
                 </Box>
                 {index < hotspots.length - 1 && <Divider />}
