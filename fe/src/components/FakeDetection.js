@@ -1,7 +1,3 @@
-import React from 'react';
-import {Box, Typography, Divider} from '@mui/material';
-import AccessibilityIcon from '@mui/icons-material/Accessibility';
-
 function getDistanceFromLatLonInM(lat1, lon1, lat2, lon2) {
   var R = 6371;
   var dLat = deg2rad(lat2 - lat1);
@@ -32,7 +28,7 @@ function simpleHash(lat, lng) {
   return hash;
 }
 
-function shouldDisplayEntity(entity, clusters, threshold = 0.3) {
+function shouldDisplayEntity(entity, clusters, threshold = 0.1) {
   const isWithinCluster = clusters.some(cluster =>
     getDistanceFromLatLonInM(entity.coordinates.lat, entity.coordinates.lon, cluster[0][0], cluster[0][1]) <= cluster[1]
   );

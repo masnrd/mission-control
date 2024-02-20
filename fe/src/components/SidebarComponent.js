@@ -3,7 +3,7 @@ import Tab from "./Tab.js";
 import Sidebar from "./Sidebar.js";
 import DroneStatusCard from "./DroneStatusCard.js";
 
-import FormatListBulletedIcon from "@mui/icons-material/FormatListBulleted";
+import SensorOccupiedIcon from '@mui/icons-material/SensorOccupied';
 import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import DeleteIcon from "@mui/icons-material/Delete";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
@@ -70,7 +70,7 @@ export default function SidebarComponent({
         onOpen={onOpen}
         panMapOnChange
         rehomeControls>
-        <Tab id="home" header="Drones" icon={<FormatListBulletedIcon/>} active>
+        <Tab id="home" header="Drones" icon={<SensorOccupiedIcon/>} active>
           {drones.map((drone) => (
             <DroneStatusCard key={drone.drone_id} droneData={drone} map={map}/>
           ))}
@@ -78,7 +78,7 @@ export default function SidebarComponent({
         <Tab
           id="clustering"
           header="Clustering"
-          icon={<FormatListBulletedIcon/>}
+          icon={<PlaceIcon/>}
           active>
           <Box sx={{padding: 2}}>
             <h1>Hotspot</h1>
@@ -147,7 +147,7 @@ export default function SidebarComponent({
         <Tab
           id="detected"
           header="Detection Status"
-          icon={<FormatListBulletedIcon/>}
+          icon={<AccessibilityIcon/>}
           active>
           {detectedEntities.filter(entity => FakeDetection.shouldDisplayEntity(entity, clusters)).map((entity, index) => (
             <div key={`entity-info-${index}`}>
