@@ -8,7 +8,7 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 import DeleteIcon from "@mui/icons-material/Delete";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
-import PlaceIcon from "@mui/icons-material/Place";
+import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 import AccessibilityIcon from "@mui/icons-material/Accessibility";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
@@ -78,7 +78,7 @@ export default function SidebarComponent({
         <Tab
           id="clustering"
           header="Clustering"
-          icon={<PlaceIcon/>}
+          icon={<LocationSearchingIcon/>}
           active>
           <Box sx={{padding: 2}}>
             <h1>Hotspot</h1>
@@ -114,7 +114,7 @@ export default function SidebarComponent({
                     alignItems: "center",
                     gap: 2,
                   }}>
-                  <PlaceIcon style={{color: "blue", sx: 200}}/>
+                  <LocationSearchingIcon style={{color: "blue", sx: 200}}/>
                   <Typography>
                     Position: ({cluster[0][0].toFixed(5)}, {cluster[0][1].toFixed(5)})
                   </Typography>

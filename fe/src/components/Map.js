@@ -80,17 +80,6 @@ export default function Map({
     fetch(url, {method: "POST", body: params});
   };
 
-  function getNewPosition(lat, lon, distanceInMeters) {
-    const EarthRadius = 6378137;
-    const dLat = distanceInMeters / EarthRadius;
-    const dLatDegrees = dLat * (180 / Math.PI);
-
-    return {
-      lat: lat + dLatDegrees,
-      lon: lon,
-    };
-  }
-
   return (
     <>
       <MapContainer
@@ -146,7 +135,7 @@ export default function Map({
             <Marker
               key={`marker-${index}`}
               position={{lat: cluster[0][0], lng: cluster[0][1]}}
-              icon={Icons.createClusterIcon()}>
+              icon={Icons.createClusterIcon(index+1)}>
               <Popup>
                 {`(${cluster[0]}, ${cluster[0]})`}
               </Popup>
@@ -158,12 +147,6 @@ export default function Map({
               color="blue"
               fillColor="blue"
               fillOpacity={0.2}
-            />
-            <Marker
-              key={`number-${index}`}
-              position={getNewPosition(cluster[0][0], cluster[0][1], 20)}
-              icon={Icons.createNumberIcon(index + 1)}
-              zIndexOffset={1000}
             />
           </div>
         ))}

@@ -3,14 +3,14 @@ import L from "leaflet";
 import ReactDOMServer from "react-dom/server";
 import WhatshotIcon from "@mui/icons-material/Whatshot";
 import AccessibilityIcon from "@mui/icons-material/Accessibility";
-import PlaceIcon from "@mui/icons-material/Place";
+import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 import DroneIconUrl from "../assets/drone.svg"
 
 const createDroneIcon = (number) => {
   const iconHtml = `
     <div style="position: relative; width: 50px; height: 50px;">
-      <img src="${DroneIconUrl}" style="width: 100%; height: 100%;" />
-      <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 14px; color: white;">
+      <img src="${DroneIconUrl}" style="width: 100%; height: 100%; opacity: 0.7;" />
+      <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 15px; color: whitesmoke;">
         ${number}
       </div>
     </div>
@@ -48,22 +48,23 @@ const createDetectionIcon = () => {
   });
 };
 
-const createClusterIcon = () => {
-  const iconHtml = ReactDOMServer.renderToString(
-    <PlaceIcon style={{color: "blue", sx: 200}}/>
+const createClusterIcon = (number) => {
+  const iconSvgHtml = ReactDOMServer.renderToString(
+    <LocationSearchingIcon style={{fontSize: '30px', color: 'blue'}}/>
   );
+
+  const iconHtml = `
+    <div style="position: relative; width: 30px; height: 30px;">
+      ${iconSvgHtml}
+      <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 15px; color: blue;">
+        ${number}
+      </div>
+    </div>
+  `;
+
   return L.divIcon({
     html: iconHtml,
     className: "custom-leaflet-cluster-icon",
-    iconSize: L.point(30, 30),
-    iconAnchor: [15, 15],
-  });
-};
-const createNumberIcon = (number) => {
-  const iconHtml = `<div style="background-color: white; color: black; border-radius: 50%; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; font-size: 12px; border: 1px solid black;">${number}</div>`;
-  return L.divIcon({
-    html: iconHtml,
-    className: "my-custom-icon",
     iconSize: [30, 30],
     iconAnchor: [15, 15],
   });
@@ -74,5 +75,4 @@ export default {
   createHotSpotIcon,
   createDetectionIcon,
   createClusterIcon,
-  createNumberIcon,
 };
