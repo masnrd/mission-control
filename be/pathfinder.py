@@ -39,7 +39,7 @@ def init_empty_prob_map(centre_pos: LatLon, n_rings: int) -> ProbabilityMap:
 class PathfinderState:
     """ Pathfinding state utilised by the drone. """
     def __init__(self, start_pos: LatLon, prob_map: ProbabilityMap = None):
-        self.max_step = 10
+        self.max_step = 30
         self.step_count = 0
         self.simulated_path = None
         start_tup = (start_pos.lat, start_pos.lon)
