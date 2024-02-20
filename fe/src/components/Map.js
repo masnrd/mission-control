@@ -189,7 +189,7 @@ export default function Map({
             <Circle
               key={`circle-${index}`}
               center={{lat: cluster[0][0], lng: cluster[0][1]}}
-              radius={cluster[1]}
+              radius={60}
               color="blue"
               fillColor="blue"
               fillOpacity={0.2}
