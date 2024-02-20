@@ -13,13 +13,8 @@ import {
 import "leaflet/dist/leaflet.css";
 import { polygonToCells, cellToBoundary } from "h3-js";
 import "./Map.css";
-import DroneMarker from "./DroneMarker";
+import Icons from "./Icon";
 
-import L from "leaflet";
-import ReactDOMServer from "react-dom/server";
-import WhatshotIcon from "@mui/icons-material/Whatshot";
-import PlaceIcon from "@mui/icons-material/Place";
-import AccessibilityIcon from "@mui/icons-material/Accessibility";
 
 export default function Map({
   drones,
@@ -79,30 +74,6 @@ export default function Map({
     return null;
   }
 
-  const createHotSpotIcon = () => {
-    const iconHtml = ReactDOMServer.renderToString(
-      <WhatshotIcon style={{ color: "red", sx: 200 }} />
-    );
-    return L.divIcon({
-      html: iconHtml,
-      className: "custom-leaflet-icon", // Adjust as needed, ensure this class does minimal or no styling to avoid conflicts
-      iconSize: L.point(30, 30), // Adjust size as needed
-      iconAnchor: L.point(15, 30), // Adjust anchor as needed, consider the icon size
-    });
-  };
-
-  const createDetectionIcon = () => {
-    const iconHtml = ReactDOMServer.renderToString(
-      <AccessibilityIcon style={{ color: "bright orange", sx: 200 }} />
-    );
-    return L.divIcon({
-      html: iconHtml,
-      className: "custom-leaflet-icon", // Adjust as needed, ensure this class does minimal or no styling to avoid conflicts
-      iconSize: L.point(30, 30), // Adjust size as needed
-      iconAnchor: L.point(15, 30), // Adjust anchor as needed, consider the icon size
-    });
-  };
-
   const addHotspot = (latlng) => {
     const url = "http://127.0.0.1:5000/hotspot/add";
     const params = new URLSearchParams();
@@ -110,26 +81,6 @@ export default function Map({
     fetch(url, { method: "POST", body: params });
   };
 
-  const createClusterIcon = () => {
-    const iconHtml = ReactDOMServer.renderToString(
-      <PlaceIcon style={{ color: "blue", sx: 200 }} />
-    );
-    return L.divIcon({
-      html: iconHtml,
-      className: "custom-leaflet-cluster-icon", // Adjust as needed, ensure this class does minimal or no styling to avoid conflicts
-      iconSize: L.point(30, 30), // Adjust size as needed
-      iconAnchor: L.point(15, 30), // Adjust anchor as needed, consider the icon size
-    });
-  };
-  const createNumberIcon = (number) => {
-    const iconHtml = `<div style="background-color: white; color: black; border-radius: 50%; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; font-size: 12px; border: 1px solid black;">${number}</div>`;
-    return L.divIcon({
-      html: iconHtml,
-      className: "my-custom-icon", // Ensure this class does minimal or no styling to avoid conflicts
-      iconSize: [30, 30], // Adjust size as needed
-      iconAnchor: [15, 30], // Adjust anchor as needed, consider the icon size
-    });
-  };
   function getNewPosition(lat, lon, distanceInMeters) {
     const EarthRadius = 6378137;
     const dLat = distanceInMeters / EarthRadius;
@@ -173,13 +124,13 @@ export default function Map({
             (drone) => drone.position.lat != null && drone.position.lon != null
           )
           .map((drone) => (
-            <DroneMarker
+            <Icons.createDroneIcon
               key={drone.drone_id}
               drone_id={drone.drone_id}
               battery_percentage={drone.battery_percentage}
               lon={drone.position.lon}
               lat={drone.position.lat}
-              mode={drone.mode}></DroneMarker>
+              mode={drone.mode}></Icons.createDroneIcon>
           ))}
         {detectedEntities.map((entity, index) => (
           <Marker
@@ -188,13 +139,13 @@ export default function Map({
               lat: entity.coordinates.lat,
               lng: entity.coordinates.lon,
             }}
-            icon={createDetectionIcon()}></Marker>
+            icon={Icons.createDetectionIcon()}></Marker>
         ))}
         {hotspots.map((hotspot, index) => (
           <Marker
             key={index}
             position={{ lat: hotspot[0], lng: hotspot[1] }}
-            icon={createHotSpotIcon()}>
+            icon={Icons.createHotSpotIcon()}>
             <Popup>{`(${hotspot[0]}, ${hotspot[1]})`}</Popup>
           </Marker>
         ))}
@@ -203,7 +154,7 @@ export default function Map({
             <Marker
               key={`marker-${index}`}
               position={{ lat: cluster[0][0], lng: cluster[0][1] }}
-              icon={createClusterIcon()}>
+              icon={Icons.createClusterIcon()}>
               <Popup>
                 {`(${cluster[0]}, ${cluster[0]})`}
               </Popup>
@@ -219,7 +170,7 @@ export default function Map({
             <Marker
               key={`number-${index}`}
               position={getNewPosition(cluster[0][0], cluster[0][1], 20)}
-              icon={createNumberIcon(index + 1)}
+              icon={Icons.createNumberIcon(index + 1)}
               zIndexOffset={1000}
             />
           </div>
