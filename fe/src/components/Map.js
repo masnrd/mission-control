@@ -6,6 +6,7 @@ import {
   Marker,
   Popup,
   Circle,
+  // LayersControl, FeatureGroup, GeoJSON,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 // import {polygonToCells, cellToBoundary} from "h3-js";
@@ -33,7 +34,8 @@ export default function Map({
   //     const bounds = map.getBounds();
   //     const sw = bounds.getSouthWest();
   //     const ne = bounds.getNorthEast();
-  //     const expansionAmount = 0.005; // Adjust this value as needed
+  //     // const expansionAmount = 0.005; // Adjust this value as needed
+  //     const expansionAmount = 0;
   //
   //     // Reference: https://github.com/matthiasfeist/what-the-h3index
   //     const boundingBox = [
@@ -65,7 +67,7 @@ export default function Map({
   //
   //   const calculateH3Resolution = (zoom) => {
   //     // Implement logic to determine resolution based on zoom level
-  //     return 11; // Placeholder value
+  //     return 14; // Placeholder value
   //   };
   //
   //   return null;
@@ -117,18 +119,20 @@ export default function Map({
         {/*  </LayersControl.Overlay>*/}
         {/*</LayersControl>*/}
         {drones
-          .filter(
-            (drone) => drone.position.lat != null && drone.position.lon != null
-          )
-          .map((drone) => (
-            <Icons.createDroneIcon
+          .filter(drone => drone.position.lat != null && drone.position.lon != null)
+          .map(drone => (
+            <Marker
               key={drone.drone_id}
-              drone_id={drone.drone_id}
-              battery_percentage={drone.battery_percentage}
-              lon={drone.position.lon}
-              lat={drone.position.lat}
-              mode={drone.mode}></Icons.createDroneIcon>
-          ))}
+              position={{lat: drone.position.lat, lng: drone.position.lon}}
+              icon={Icons.createDroneIcon(drone.drone_id)}>
+              <Popup>
+                Drone ID: {drone.drone_id}<br/>
+                Battery: {drone.battery_percentage.toFixed(1)}%<br/>
+                Mode: {drone.mode}
+              </Popup>
+            </Marker>
+          ))
+        }
         {hotspots.map((hotspot, index) => (
           <Marker
             key={index}
