@@ -122,13 +122,13 @@ export default function Map({
                 </Popup>
               </Marker>
               {drone.simulated_path && (
-                Array.from({length: 10}).map((_, index) => (
-                  <Polyline
-                    key={index}
-                    positions={Object.values(drone.simulated_path).map(point => [point.lat, point.lon])}
-                    color="red"
-                  />
-                ))
+                <Polyline
+                  positions={Object.values(drone.simulated_path).map(point => [point.lat, point.lon])}
+                  color="red"
+                  weight={2}
+                  // opacity={0.8}
+                  // dashArray="10, 15"
+                />
               )}
             </>
           ))
