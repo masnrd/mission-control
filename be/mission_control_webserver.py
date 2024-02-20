@@ -75,7 +75,6 @@ class MCWebServer:
             "detected" : [entity.to_dict() for entity in self.mission.detected]
         }
         jsonify(ret)
-        print(ret["drones"][1])
         return ret
     
     def route_action_moveto(self) -> Tuple[Dict, int]:

@@ -51,7 +51,6 @@ class PathfinderState:
         if self.simulated_path is None:
             self.simulated_path = self.get_simulated_path(start_pos)
 
-        print("EVERYTHING INIT")
     def get_next_waypoint(self, cur_pos: LatLon) -> LatLon:
         self.step_count += 1
         if self.step_count > self.max_step:

@@ -6,6 +6,7 @@ import {
   Marker,
   Popup,
   Circle,
+  Polyline
   // LayersControl, FeatureGroup, GeoJSON,
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -13,7 +14,6 @@ import "leaflet/dist/leaflet.css";
 import "./Map.css";
 import Icons from "./Icon";
 import FakeDetection from "./FakeDetection";
-
 
 export default function Map({
                               drones,
@@ -110,16 +110,27 @@ export default function Map({
         {drones
           .filter(drone => drone.position.lat != null && drone.position.lon != null)
           .map(drone => (
-            <Marker
-              key={drone.drone_id}
-              position={{lat: drone.position.lat, lng: drone.position.lon}}
-              icon={Icons.createDroneIcon(drone.drone_id)}>
-              <Popup>
-                Drone ID: {drone.drone_id}<br/>
-                Battery: {drone.battery_percentage.toFixed(1)}%<br/>
-                Mode: {drone.mode}
-              </Popup>
-            </Marker>
+            <>
+              <Marker
+                key={drone.drone_id}
+                position={{lat: drone.position.lat, lng: drone.position.lon}}
+                icon={Icons.createDroneIcon(drone.drone_id)}>
+                <Popup>
+                  Drone ID: {drone.drone_id}<br/>
+                  Battery: {drone.battery_percentage.toFixed(1)}%<br/>
+                  Mode: {drone.mode}
+                </Popup>
+              </Marker>
+              {drone.simulated_path && (
+                Array.from({length: 10}).map((_, index) => (
+                  <Polyline
+                    key={index}
+                    positions={Object.values(drone.simulated_path).map(point => [point.lat, point.lon])}
+                    color="red"
+                  />
+                ))
+              )}
+            </>
           ))
         }
         {hotspots.map((hotspot, index) => (
@@ -135,7 +146,7 @@ export default function Map({
             <Marker
               key={`marker-${index}`}
               position={{lat: cluster[0][0], lng: cluster[0][1]}}
-              icon={Icons.createClusterIcon(index+1)}>
+              icon={Icons.createClusterIcon(index + 1)}>
               <Popup>
                 {`(${cluster[0]}, ${cluster[0]})`}
               </Popup>
