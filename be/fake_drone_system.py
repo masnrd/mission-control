@@ -106,6 +106,7 @@ class Drone:
                         if next_pos:
                             self.target_pos = next_pos
                         else:
+                            # Return None means finish search for now (hardcoded in PathFinderState.get_next_waypoint)
                             self.set_drone_mode(DroneMode.TRAVEL, DroneMode.IDLE)
                             self.set_drone_target_pos(HOME_POSITION.lat, HOME_POSITION.lon)
                     case DroneMode.RTB:
@@ -115,7 +116,6 @@ class Drone:
             # Otherwise, we move by a certain speed
             if dist >= self.speed:
                 # Here, we won't reach the target within the next cycle.
-                distance_vec = pos.toXY(self.target_pos)
                 distance_vec = self.target_pos.toXY(pos)
                 distance_vec.x = (distance_vec.x / dist) * self.speed
                 distance_vec.y = (distance_vec.y / dist) * self.speed
@@ -123,7 +123,6 @@ class Drone:
                 self.drone_states[self.drone_id]._position = distance_vec.toLatLon()
             else:
                 # Here, we WILL reach the target within the next cycle, but speed will overshoot.
-                distance_vec = pos.toXY(self.target_pos)
                 distance_vec = self.target_pos.toXY(pos)
                 distance_vec.x = (distance_vec.x / dist) * dist
                 distance_vec.y = (distance_vec.y / dist) * dist
