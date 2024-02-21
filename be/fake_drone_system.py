@@ -12,7 +12,6 @@ from queue import Queue
 from time import sleep
 
 from constants import HOME_POSITION
-from detection_utils import DetectedEntity
 
 from drone_utils import DroneId, DroneState, DroneMode, DroneCommand, DroneCommandId
 from maplib import LatLon
@@ -51,7 +50,7 @@ class _SingletonMeta(type):
     
 class Drone:
     """ Fake drone """
-    def __init__(self, drone_id: DroneId, drone_states: Dict[DroneId, DroneState], start_pos: LatLon, detected_queue:Queue[DetectedEntity]):
+    def __init__(self, drone_id: DroneId, drone_states: Dict[DroneId, DroneState], start_pos: LatLon):
         self.drone_id = drone_id
         self.logger = logging.getLogger(f"drone_{drone_id}")
         self.drone_states = drone_states
@@ -60,14 +59,12 @@ class Drone:
         self.pathfinder = None
         self.next_mode = None
         self.speed = DRONE_SPEED
-        self.detected = detected_queue
         self._lock = RLock()
 
     def log(self, msg: str):
         self.logger.info(msg)
 
     def cycle(self):
-        self.random_detection() # TODO: To remove
         match self.drone_states[self.drone_id].get_mode():
             case DroneMode.INIT | DroneMode.CONNECT_FC | DroneMode.INIT_FC | DroneMode.CONNECT_MC:
                 self.set_drone_mode(DroneMode.IDLE)
@@ -184,26 +181,16 @@ class Drone:
     def set_drone_last_command(self, command: DroneCommand):
         with self._lock:
             self.drone_states[self.drone_id]._last_command = command
-
-    def random_detection(self):
-        # TODO: Change this
-        DICSOVERY_PROBABILITY = 0.02
-        guess = random.random()
-        if guess < DICSOVERY_PROBABILITY:
-            # self.log(f"Drone {self.drone_id} detected at {self.drone_states[self.drone_id].get_position(), datetime.now()}")
-            self.detected.put(DetectedEntity(drone_id=self.drone_id, coordinates=self.drone_states[self.drone_id].get_position(), time_found=datetime.now()))
-
     
 class DroneSystem(metaclass=_SingletonMeta):
     """
     This runs in a separate thread to simulate both the mission_control_node and the drones.
     """
-    def __init__(self, drone_states: Dict[DroneId, DroneState], start_pos: LatLon, detected_queue:Queue[DetectedEntity]):
+    def __init__(self, drone_states: Dict[DroneId, DroneState], start_pos: LatLon):
         self.drones: Dict[DroneId, Drone] = {}
         self.commands: Queue[Tuple[DroneId, DroneCommand]] = Queue()  # Simulated command queue from mission control node to drones
-        self.detected: Queue[DetectedEntity] = detected_queue
         for drone_id in drone_states.keys():
-            self.drones[drone_id] = Drone(drone_id, drone_states, start_pos, detected_queue)
+            self.drones[drone_id] = Drone(drone_id, drone_states, start_pos)
 
         self.modification_lock = Lock()
         self.exit = Event()

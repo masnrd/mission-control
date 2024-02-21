@@ -1,3 +1,5 @@
+from datetime import datetime
+import random
 import threading
 import logging
 from queue import Queue, Empty
@@ -16,8 +18,9 @@ COMMAND_CHECK_INTERVAL = 1
 class MCNode:
     def __init__(self, drone_states: Dict[DroneId, DroneState], commands: Queue[Tuple[DroneId, DroneCommand]], detected_queue: Queue[DetectedEntity]):
         self.logger = logging.getLogger("mission_control")
-        self.drone_sys = DroneSystem(drone_states, HOME_POSITION, detected_queue)
+        self.drone_sys = DroneSystem(drone_states, HOME_POSITION)
         self.drone_states = drone_states
+        self.detected_queue:Queue[DetectedEntity] = detected_queue
 
         # Initialise command queue
         self.command_loop = threading.Timer(COMMAND_CHECK_INTERVAL, self.check_command_loop)
@@ -37,6 +40,7 @@ class MCNode:
     def check_command_loop(self):
         """ Loop to check for commands from the webserver """
         try:
+            self.random_detection()
             drone_id, command = self.commands.get(block=False)
             print(f"MISSION CONTROL: User entered command {DroneCommandId(command.command_id).name}")
             if drone_id not in self.drone_states.keys():
@@ -51,6 +55,14 @@ class MCNode:
     def mc_send_command(self, drone_id: DroneId, drone_cmd: DroneCommand):
         """ MC sends a Command to a given drone """
         self.drone_sys.add_command(drone_id, drone_cmd)
+
+    def random_detection(self):
+        DICSOVERY_PROBABILITY = 0.5
+        guess = random.random()
+        drone_ids = list(self.drone_states.keys())
+        if guess < DICSOVERY_PROBABILITY:
+            drone_id = random.choice(drone_ids)
+            self.detected_queue.put(DetectedEntity(drone_id=drone_id, coordinates=self.drone_states[drone_id].get_position(), time_found=datetime.now()))
 
 def main(args=None):
     mission = Mission()
@@ -74,7 +86,7 @@ def main(args=None):
     mcnode.start_node()
 
     # Start drones
-    drone_sys = DroneSystem(drone_states, HOME_POSITION, detected_queue=detected_queue)
+    drone_sys = DroneSystem(drone_states, HOME_POSITION)
     drone_sys.start()
     drone_sys.connect_drones()
 
