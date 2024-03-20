@@ -23,55 +23,6 @@ export default function Map({
   setMap,
 }) {
   const start_position = [1.3399775009363866, 103.96258672159254];
-  // const [hexagons, setHexagons] = useState([]);
-  // function H3Overlay() {
-  //   const map = useMapEvents({
-  //     dragend: () => updateHexagons(),
-  //     zoomend: () => updateHexagons(),
-  //   });
-  //
-  //   const updateHexagons = () => {
-  //     const bounds = map.getBounds();
-  //     const sw = bounds.getSouthWest();
-  //     const ne = bounds.getNorthEast();
-  //     // const expansionAmount = 0.005; // Adjust this value as needed
-  //     const expansionAmount = 0;
-  //
-  //     // Reference: https://github.com/matthiasfeist/what-the-h3index
-  //     const boundingBox = [
-  //       [sw.lng - expansionAmount, sw.lat - expansionAmount], // Expanded SW corner
-  //       [ne.lng + expansionAmount, sw.lat - expansionAmount], // Bottom-right corner
-  //       [ne.lng + expansionAmount, ne.lat + expansionAmount], // Expanded NE corner
-  //       [sw.lng - expansionAmount, ne.lat + expansionAmount], // Top-left corner
-  //       [sw.lng - expansionAmount, sw.lat - expansionAmount], // Closing the loop (back to expanded SW corner)
-  //     ];
-  //
-  //     const h3Resolution = calculateH3Resolution(map.getZoom());
-  //
-  //     const hexIndexes = polygonToCells(boundingBox, h3Resolution, true);
-  //
-  //     const hexFeatures = hexIndexes.map((index) => {
-  //       const boundary = cellToBoundary(index);
-  //       return {
-  //         type: "Feature",
-  //         properties: {},
-  //         geometry: {
-  //           type: "Polygon",
-  //           coordinates: [boundary.map((coord) => [coord[1], coord[0]])],
-  //         },
-  //       };
-  //     });
-  //
-  //     setHexagons(hexFeatures);
-  //   };
-  //
-  //   const calculateH3Resolution = (zoom) => {
-  //     // Implement logic to determine resolution based on zoom level
-  //     return 14; // Placeholder value
-  //   };
-  //
-  //   return null;
-  // }
 
   const addHotspot = (latlng) => {
     const url = "http://127.0.0.1:5000/hotspot/add";
@@ -97,17 +48,6 @@ export default function Map({
           // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <AddHotspotOnClick onNewPoint={addHotspot} />
-        {/*<LayersControl>*/}
-        {/*  <LayersControl.Overlay name="H3 Overlay">*/}
-        {/*    <FeatureGroup>*/}
-        {/*      <H3Overlay/>*/}
-        {/*      <GeoJSON*/}
-        {/*        key={hexagons.length}*/}
-        {/*        data={{type: "FeatureCollection", features: hexagons}}*/}
-        {/*      />*/}
-        {/*    </FeatureGroup>*/}
-        {/*  </LayersControl.Overlay>*/}
-        {/*</LayersControl>*/}
         {drones
           .filter(
             (drone) => drone.position.lat != null && drone.position.lon != null
@@ -130,10 +70,8 @@ export default function Map({
                   positions={Object.values(drone.simulated_path).map(
                     (point) => [point.lat, point.lon]
                   )}
-                  color="red"
-                  weight={2}
-                  // opacity={0.8}
-                  // dashArray="10, 15"
+                  color="black"
+                  weight={3}
                 />
               )}
             </>
@@ -158,9 +96,10 @@ export default function Map({
               key={`circle-${index}`}
               center={{ lat: cluster[0][0], lng: cluster[0][1] }}
               radius={60}
-              color="blue"
-              fillColor="blue"
-              fillOpacity={0.2}
+              color="#92a8d1"
+              fillColor="#92a8d1"
+              fillOpacity={0.5}
+              weight={0}
             />
           </div>
         ))}
