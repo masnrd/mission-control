@@ -24,16 +24,15 @@ const Tab = ({
 
   return (
     <div id={id} className={`sidebar-pane${activeClass}`}>
-      <h1 className="sidebar-header">
+      <div className="sidebar-header">
         {header}
         <div
           className="sidebar-close"
           role="button" // Corrected 'btn' to 'button' for valid role value
-          onClick={onClose}
-        >
+          onClick={onClose}>
           <CloseIconSelector closeIcon={closeIcon} position={position} />
         </div>
-      </h1>
+      </div>
       {children}
     </div>
   );
