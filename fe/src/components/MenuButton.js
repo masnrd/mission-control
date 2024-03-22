@@ -33,7 +33,7 @@ const MenuButton = (props) => {
         <Tooltip
           title={props.id}
           placement="right-start"
-          opperProps={{
+          PopperProps={{
             style: { zIndex: 100 + "!important", position: "relative" },
           }}>
           {icon}
