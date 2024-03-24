@@ -67,7 +67,6 @@ class MCNode:
 def main(args=None):
     mission = Mission()
     drone_states = {
-        DroneId(69): DroneState(69),
         DroneId(1): DroneState(1),
         DroneId(2): DroneState(2),
         DroneId(3): DroneState(3),
