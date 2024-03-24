@@ -13,7 +13,7 @@ from typing import Tuple, Dict, NewType
 from maplib import LatLon
 import copy
 
-DEFAULT_RESOLUTION = 12
+DEFAULT_RESOLUTION = 14
 N_RINGS_CLUSTER = 16     # Defines the number of rings in a cluster by default
 
 # Probability Map type definition: A dictionary, where each H3 hexagon index is mapped to a specific probability.
@@ -39,7 +39,7 @@ def init_empty_prob_map(centre_pos: LatLon, n_rings: int) -> ProbabilityMap:
 class PathfinderState:
     """ Pathfinding state utilised by the drone. """
     def __init__(self, start_pos: LatLon, prob_map: ProbabilityMap = None):
-        self.max_step = 30
+        self.max_step = 300
         self.step_count = 0
         self.simulated_path = None
         start_tup = (start_pos.lat, start_pos.lon)

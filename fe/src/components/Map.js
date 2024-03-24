@@ -95,10 +95,10 @@ export default function Map({
             <Circle
               key={`circle-${index}`}
               center={{ lat: cluster[0][0], lng: cluster[0][1] }}
-              radius={60}
-              color="#92a8d1"
-              fillColor="#92a8d1"
-              fillOpacity={0.5}
+              radius={30}
+              color="#ffd214"
+              fillColor="#ffd214"
+              fillOpacity={0.4}
               weight={0}
             />
           </div>
