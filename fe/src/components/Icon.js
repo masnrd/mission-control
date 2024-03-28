@@ -8,7 +8,7 @@ import DroneIconUrl from "../assets/drone2.svg";
 
 const createDroneIcon = (number) => {
   const iconHtml = `
-  <div style="position: relative; width: 100px; height: 100px; display: flex; justify-content: center; align-items: center;">
+  <div style="position: relative; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center;">
   <div style="position: absolute; font-size: 24px; color: #000; background-color: light blue; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; border-radius: 50%; z-index: 100;">
   <img src="${DroneIconUrl}" style="width: 50%; height: 50%; opacity: 1;" />
   </div>
@@ -17,7 +17,6 @@ const createDroneIcon = (number) => {
   <div style="position: absolute; width: 30px; height: 30px; border-radius: 50%; background-color: rgba(100, 100, 200, 0.1);"></div>
   <div style="position: absolute; width: 10px; height: 10px; border-radius: 50%; background-color: rgba(100, 100, 200, 0.05);"></div>
 </div>
-
   `;
 
   return L.divIcon({
