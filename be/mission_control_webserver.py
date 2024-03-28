@@ -72,7 +72,7 @@ class MCWebServer:
 
         ret = {
             "drones": drones,
-            "hotspots": list(self.mission.hotspots),  # Assuming this is already serializable
+            "hotspots": self.mission.hotspots,  # Assuming this is already serializable
             "clusters": self.mission.cluster_centres,  # Assuming this is already serializable
             "clusters_to_explore" : self.mission.cluster_centres_to_explore,
             "detected" : [entity.to_dict() for entity in self.mission.detected]
@@ -141,7 +141,10 @@ class MCWebServer:
     def route_add_hotspot(self):
         data = request.form.to_dict()
         hotspot = json.loads(data.get('hotspot_position', None))
-        self.mission.hotspots.add((hotspot["latlng"]["lat"],hotspot["latlng"]["lng"])) # Should be a set here
+        if (hotspot["latlng"]["lat"],hotspot["latlng"]["lng"]) not in self.mission.hotspots:
+            self.mission.hotspots.append((hotspot["latlng"]["lat"],hotspot["latlng"]["lng"])) # Should be a set here
+        else:
+            print("Already added")
         return {}, 200
     
     def route_delete_hotspot(self):

@@ -19,7 +19,7 @@ class Mission:
     def __init__(self):
         self.stage = MissionStage.SETUP
         self.duration = datetime.now()
-        self.hotspots = set()
+        self.hotspots = []
         self.cluster_centres: Dict[int, Tuple[Tuple[float,float], List[Tuple[float,float]]]] = {}
         self.cluster_centres_to_explore: Tuple[Tuple[float,float], List[Tuple[float,float]]] = [] # Queue of clusters to explore
         self.detected:List[DetectedEntity] = []

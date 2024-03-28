@@ -5,8 +5,9 @@ from clusterfinder.point import Point
 from clusterfinder.clusterfinder import DIANAClusterFinder
 
 
-def run_clustering(hotspots_locations: Set[Tuple]) -> Dict[int, object]:
+def run_clustering(hotspots_locations: List[Tuple]) -> Dict[int, object]:
     '''Returns a dictionary of cluster_id : Tuple(centre, List(Cluster))'''
+    if len(hotspots_locations) == 0: return {}
     hotspots = [Point(id, h) for id, h in enumerate(hotspots_locations)]
 
     # Find clusters
