@@ -37,6 +37,10 @@ class DroneCommandId(IntEnum):
     SEARCH_SECTOR = 1
     MOVE_TO       = 2  # Go to a specific lat/lon.
 
+class PathAlgo(IntEnum):
+    BAYES           = 0  # Force RTB. No further commands will be accepted.
+    SPIRAL          = 1
+
 class DroneCommand:
     """ Interface for a command """
     def __init__(self, command_id: int, command_data: bytes):
@@ -57,9 +61,9 @@ class DroneCommand_RTB(DroneCommand):
         super().__init__(DroneCommandId.RTB, command_data)
 
 class DroneCommand_SEARCH_SECTOR(DroneCommand):
-    def __init__(self, sector_start: LatLon, hotspots: List[Tuple[float, float]]):
+    def __init__(self, sector_start: LatLon, hotspots: List[Tuple[float, float]], algo: PathAlgo):
         #TODO: encode prob_map
-        command_data = struct.pack("!ff", sector_start.lat, sector_start.lon)        
+        command_data = struct.pack("!ffI", sector_start.lat, sector_start.lon, algo)        
         command_data += struct.pack("!I", len(hotspots))  # Assuming an unsigned int for the length
         # Encode each cluster point
         for hotspot in hotspots:

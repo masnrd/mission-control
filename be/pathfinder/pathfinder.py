@@ -11,6 +11,7 @@ import h3
 import numpy as np
 from abc import ABC, abstractmethod
 from typing import Tuple, Dict, NewType
+from drone_utils import PathAlgo
 from maplib import LatLon
 import copy
 from pathfinder.utils import *
@@ -133,13 +134,17 @@ def update_probability_map( probability_map: dict[str, float], centre: tuple[flo
 
 class PathfinderState:
     """ Pathfinding state utilised by the drone. """
-    def __init__(self, start_pos: LatLon, prob_map: ProbabilityMap = None):
+    def __init__(self, start_pos: LatLon, prob_map: ProbabilityMap = None, path_algo: PathAlgo = PathAlgo.BAYES):
         self.max_step = 300
         self.step_count = 0
         self.simulated_path = None
         start_tup = (start_pos.lat, start_pos.lon)
-        self._pathfinder = BayesianHexSearch(DEFAULT_RESOLUTION, start_tup)  #TODO: to be set by the caller, based on the search method defined by MC
-        self._pathfinder_sim = BayesianHexSearch(DEFAULT_RESOLUTION, start_tup)
+        if path_algo == PathAlgo.BAYES:
+            self._pathfinder = BayesianHexSearch(DEFAULT_RESOLUTION, start_tup)  #TODO: to be set by the caller, based on the search method defined by MC
+            self._pathfinder_sim = BayesianHexSearch(DEFAULT_RESOLUTION, start_tup)
+        else:
+            self._pathfinder = OutwardSpiralPathFinder(DEFAULT_RESOLUTION, start_tup)  #TODO: to be set by the caller, based on the search method defined by MC
+            self._pathfinder_sim = OutwardSpiralPathFinder(DEFAULT_RESOLUTION, start_tup)
         self._prob_map = prob_map
         if self.simulated_path is None:
             self.simulated_path = self.get_simulated_path(start_pos)

@@ -46,9 +46,13 @@ export default function SidebarComponent({
     }
   }
 
-  const assignForSearch = () => {
+  const assignForSearch = (path_algo) => {
     try {
-      fetch("http://127.0.0.1:5000/api/setup/start_operation");
+      const params = new URLSearchParams();
+      params.append("path_algo", path_algo);
+      fetch(
+        "http://127.0.0.1:5000/api/setup/start_operation?path_algo=" + path_algo
+      );
     } catch (error) {
       console.error("Error:", error);
     }

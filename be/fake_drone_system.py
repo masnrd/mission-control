@@ -13,7 +13,7 @@ from time import sleep
 
 from constants import HOME_POSITION
 
-from drone_utils import DroneId, DroneState, DroneMode, DroneCommand, DroneCommandId
+from drone_utils import DroneId, DroneState, DroneMode, DroneCommand, DroneCommandId, PathAlgo
 from maplib import LatLon
 from pathfinder.pathfinder import N_RINGS_CLUSTER, PathfinderState, init_empty_prob_map, update_prob_map_w_hotspots
 
@@ -30,8 +30,8 @@ def unpack_command(cmd: DroneCommand) -> Dict[str, Any]:
         coords = struct.unpack("!ff", cmd_data)
         ret["base_pos"] = LatLon(coords[0], coords[1])
     elif cmd_id == DroneCommandId.SEARCH_SECTOR:
-        sector_start_lat, sector_start_lon, num_hotspots = struct.unpack_from("!ffi", cmd_data, 0)
-        offset = struct.calcsize("!ffi")
+        sector_start_lat, sector_start_lon, algo, num_hotspots = struct.unpack_from("!ffii", cmd_data, 0)
+        offset = struct.calcsize("!ffii")
         hotspots = []
         for _ in range(num_hotspots):
             # For each hotspot, read a lat-lon pair
@@ -40,6 +40,7 @@ def unpack_command(cmd: DroneCommand) -> Dict[str, Any]:
             offset += struct.calcsize("!ff")
         ret["sector_start_pos"] = LatLon(sector_start_lat, sector_start_lon)
         ret["hotspots"] = hotspots
+        ret["path_algo"] = PathAlgo.BAYES if algo==0 else PathAlgo.SPIRAL
     elif cmd_id == DroneCommandId.MOVE_TO:
         coords = struct.unpack("!ff", cmd_data)
         ret["goto_pos"] = LatLon(coords[0], coords[1])
@@ -146,11 +147,12 @@ class Drone:
             case DroneCommandId.SEARCH_SECTOR:
                 self.set_drone_mode(DroneMode.TRAVEL, DroneMode.SEARCH)
                 target_pos = command["sector_start_pos"]
+                target_pos = command["sector_start_pos"]
                 self.set_drone_target_pos(target_pos.lat, target_pos.lon)
                 with self._lock:
                     prob_map = init_empty_prob_map(target_pos, N_RINGS_CLUSTER)
                     prob_map = update_prob_map_w_hotspots(probability_map=prob_map, hotspots=command["hotspots"])
-                    self.pathfinder = PathfinderState(target_pos, prob_map)
+                    self.pathfinder = PathfinderState(target_pos, prob_map, command["path_algo"])
                     self.drone_states[self.drone_id].simulated_path = self.pathfinder.simulated_path
         
         self.set_drone_last_command(drone_command)

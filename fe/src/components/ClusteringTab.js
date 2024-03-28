@@ -16,6 +16,10 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItem from "@mui/material/ListItem";
 import IconButton from "@mui/material/IconButton";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 
 // Assuming this component is part of your SidebarComponent
 export default function ClusteringTab({
@@ -27,6 +31,12 @@ export default function ClusteringTab({
   assignForSearch,
 }) {
   const [activeStep, setActiveStep] = useState(0);
+  const [pathAlgo, setPathAlgo] = useState("bayes");
+
+  const handleChange = (event) => {
+    setPathAlgo(event.target.value);
+  };
+
   const steps = [
     {
       label: "View Hotspots",
@@ -98,9 +108,21 @@ export default function ClusteringTab({
               </ListItem>
             </>
           ))}
+          <FormControl fullWidth>
+            <InputLabel id="demo-simple-select-label">Age</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={pathAlgo}
+              label="Search Algorithm"
+              onChange={handleChange}>
+              <MenuItem value={"bayes"}>Bayes- Probability</MenuItem>
+              <MenuItem value={"spiral"}>Spiral - Exhaustive</MenuItem>
+            </Select>
+          </FormControl>
           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
             <Button
-              onClick={assignForSearch}
+              onClick={assignForSearch(pathAlgo)}
               startIcon={<GpsFixedIcon />}
               variant="contained">
               Assign and Search

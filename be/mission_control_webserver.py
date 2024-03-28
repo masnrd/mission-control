@@ -18,7 +18,7 @@ from assigner.simplequeueassigner import SimpleQueueAssigner
 from detection_utils import DetectedEntity
 
 from mission_utils import Mission, SetEncoder
-from drone_utils import DroneState, DroneId
+from drone_utils import DroneState, DroneId, PathAlgo
 from drone_utils import DroneCommand, DroneCommand_SEARCH_SECTOR, DroneCommand_MOVE_TO
 from run_clustering import run_clustering
 from maplib import LatLon
@@ -162,10 +162,11 @@ class MCWebServer:
     
     def route_start_operation(self):
         """Run assignment on drones in drone state, cluster centers and command drones to search sector"""
+        algo = request.args.get("path_algo", type=str, default="bayes")
         assignments = self.assigner.fit(self.mission.cluster_centres_to_explore, self.drone_states)
         for drone_id, cluster in assignments.items():
-            hotspots_in_cluster = cluster
-            command_tup = (drone_id, DroneCommand_SEARCH_SECTOR(LatLon(cluster[0][0], cluster[0][1]), cluster[1]))
+            if algo == "bayes": command_tup = (drone_id, DroneCommand_SEARCH_SECTOR(LatLon(cluster[0][0], cluster[0][1]), cluster[1], PathAlgo.BAYES))
+            else: command_tup = (drone_id, DroneCommand_SEARCH_SECTOR(LatLon(cluster[0][0], cluster[0][1]), cluster[1], PathAlgo.SPIRAL))
             self.commands.put_nowait(command_tup)
         return {}, 200        
 
