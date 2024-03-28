@@ -1,4 +1,5 @@
-from .interface import ClusterFinder
+from typing import Dict
+from .interface import Cluster, ClusterFinder
 
 # DBScan ClusterFinder
 
@@ -65,9 +66,9 @@ class DBSCANClusterFinder(ClusterFinder):
 # DIANA ClusterFinder
 
 
-class DIANA_Cluster:
+class DIANA_Cluster(Cluster):
     def __init__(self, points):
-        self.points = points
+        self.hotspots = points
 
     def longest_distance(self):
         """
@@ -75,12 +76,12 @@ class DIANA_Cluster:
         """
         max_distance = 0
         A, B = None, None
-        for i in range(len(self.points)):
-            for j in range(i+1, len(self.points)):
-                d = self.points[i].distance(self.points[j])
+        for i in range(len(self.hotspots)):
+            for j in range(i+1, len(self.hotspots)):
+                d = self.hotspots[i].distance(self.hotspots[j])
                 if d > max_distance:
                     max_distance = d
-                    A, B = self.points[i], self.points[j]
+                    A, B = self.hotspots[i], self.hotspots[j]
         return max_distance, [A, B]
 
     def split(self, A, B):
@@ -88,19 +89,19 @@ class DIANA_Cluster:
         cluster_a = [A]
         cluster_b = [B]
 
-        for i in range(len(self.points)):
-            if self.points[i] in (A, B):
+        for i in range(len(self.hotspots)):
+            if self.hotspots[i] in (A, B):
                 pass
             else:
-                if self.points[i].distance(A) > self.points[i].distance(B):
-                    cluster_b.append(self.points[i])
+                if self.hotspots[i].distance(A) > self.hotspots[i].distance(B):
+                    cluster_b.append(self.hotspots[i])
                 else:
-                    cluster_a.append(self.points[i])
+                    cluster_a.append(self.hotspots[i])
 
         return DIANA_Cluster(cluster_a), DIANA_Cluster(cluster_b)
 
     def __str__(self):
-        return f'''DIANA_Cluster:{[i.id for i in self.points]}'''
+        return f'''DIANA_Cluster:{[i.id for i in self.hotspots]}'''
 
 
 class DIANAClusterFinder(ClusterFinder):
@@ -115,7 +116,8 @@ class DIANAClusterFinder(ClusterFinder):
         super().__init__(dataset)
         self.threshold = threshold
 
-    def fit(self):
+    def fit(self)->Dict[int, DIANA_Cluster]:
+        # self.clusters: Dict[int, ]
         initial_cluster = DIANA_Cluster(self.dataset)
 
         output_clusters = []
@@ -130,6 +132,6 @@ class DIANAClusterFinder(ClusterFinder):
                 output_clusters.append(target_cluster)
 
         for i in range(len(output_clusters)):
-            self.clusters[i] = output_clusters[i].points
+            self.clusters[i] = output_clusters[i].hotspots
 
         return self.clusters

@@ -1,7 +1,7 @@
 from enum import IntEnum
 from datetime import datetime
 import json
-from typing import List
+from typing import Dict, List, Tuple
 
 from detection_utils import DetectedEntity
 
@@ -20,8 +20,8 @@ class Mission:
         self.stage = MissionStage.SETUP
         self.duration = datetime.now()
         self.hotspots = set()
-        self.cluster_centres = {}
-        self.cluster_centres_to_explore = [] # Queue of clusters to explore
+        self.cluster_centres: Dict[int, Tuple[Tuple[float,float], List[Tuple[float,float]]]] = {}
+        self.cluster_centres_to_explore: Tuple[Tuple[float,float], List[Tuple[float,float]]] = [] # Queue of clusters to explore
         self.detected:List[DetectedEntity] = []
 
 class SetEncoder(json.JSONEncoder):

@@ -4,7 +4,7 @@ Utilities for interacting with the drones.
 """
 import struct
 from enum import IntEnum
-from typing import Union, NewType, Dict, Any
+from typing import List, Tuple, Union, NewType, Dict, Any
 
 from maplib import LatLon
 from ros2_stub import Command
@@ -57,9 +57,13 @@ class DroneCommand_RTB(DroneCommand):
         super().__init__(DroneCommandId.RTB, command_data)
 
 class DroneCommand_SEARCH_SECTOR(DroneCommand):
-    def __init__(self, sector_start: LatLon, sector_prob_map: ProbabilityMap):
+    def __init__(self, sector_start: LatLon, hotspots: List[Tuple[float, float]]):
         #TODO: encode prob_map
-        command_data = struct.pack("!ff", sector_start.lat, sector_start.lon)
+        command_data = struct.pack("!ff", sector_start.lat, sector_start.lon)        
+        command_data += struct.pack("!I", len(hotspots))  # Assuming an unsigned int for the length
+        # Encode each cluster point
+        for hotspot in hotspots:
+            command_data += struct.pack("!ff", hotspot[0], hotspot[1])
         super().__init__(DroneCommandId.SEARCH_SECTOR, command_data)
 
 class DroneCommand_MOVE_TO(DroneCommand):

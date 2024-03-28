@@ -9,9 +9,8 @@ import DroneIconUrl from "../assets/drone2.svg";
 const createDroneIcon = (number) => {
   const iconHtml = `
   <div style="position: relative; width: 100px; height: 100px; display: flex; justify-content: center; align-items: center;">
-  <!-- Arrow icon (could be replaced with an SVG for more detail) with a blue background -->
-  <div style="position: absolute; font-size: 24px; color: #000; background-color: light blue; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; border-radius: 50%; z-index: 10;">
-  <img src="${DroneIconUrl}" style="width: 100%; height: 100%; opacity: 1;" />
+  <div style="position: absolute; font-size: 24px; color: #000; background-color: light blue; width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; border-radius: 50%; z-index: 100;">
+  <img src="${DroneIconUrl}" style="width: 50%; height: 50%; opacity: 1;" />
   </div>
   <!-- Confounding circles with blue fill and decreasing opacity -->
   <div style="position: absolute; width: 60px; height: 60px; border-radius: 50%; background-color: rgba(100, 100, 200, 0.3);"></div>

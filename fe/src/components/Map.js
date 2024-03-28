@@ -42,6 +42,7 @@ export default function Map({
         ref={setMap}>
         <TileLayer
           zoom={18}
+          maxNativeZoom={19}
           maxZoom={30}
           attribution="&copy; OpenStreetMap contributors"
           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
@@ -105,7 +106,7 @@ export default function Map({
         ))}
         {detectedEntities
           .filter((entity) =>
-            FakeDetection.shouldDisplayEntity(entity, clusters, 0.3)
+            FakeDetection.shouldDisplayEntity(entity, clusters)
           )
           .map((entity, index) => (
             <Marker

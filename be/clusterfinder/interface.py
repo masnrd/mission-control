@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import List, Tuple
 
 
 class ClusterFinder(ABC):
@@ -20,3 +21,9 @@ class ClusterFinder(ABC):
         for cluster_id, points in self.clusters.items():
             points = [point.id for point in points]
             print(f"Cluster: {cluster_id}, Points: {points}")
+
+class Cluster(ABC):
+    """Generic Cluster object"""
+    def __init__(self,):
+        self.centre: Tuple[float, float] = (None, None)
+        self.hotspots:List[Tuple[float, float]] = []

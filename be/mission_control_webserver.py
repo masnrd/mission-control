@@ -31,13 +31,14 @@ class MCWebServer:
     def __init__(self, mission:Mission, drone_states: Dict[int, DroneState], commands: Queue[Tuple[DroneId, DroneCommand]], detected_queue: Queue[DetectedEntity]):
         self.static_dir = Path("frontend")
         # Flask.logger_name = "listlogger"
-        self.app = Flask(
+        app = Flask(
             "Mission Control", 
             static_url_path='',
             static_folder=self.static_dir,
             template_folder=self.static_dir,
         )
-        CORS(self.app)
+        cors = CORS(app, resources={r"/*": {"origins": "*"}})
+        self.app = app
 
         self.mission = mission
         self.drone_states = drone_states
@@ -51,7 +52,6 @@ class MCWebServer:
         self.app.add_url_rule("/hotspot/add", methods=["POST"], view_func=self.route_add_hotspot)
         self.app.add_url_rule("/hotspot/delete", methods=["POST"], view_func=self.route_delete_hotspot)
         self.app.add_url_rule("/api/action/moveto", view_func=self.route_action_moveto)
-        self.app.add_url_rule("/api/action/search", view_func=self.route_action_search)
         self.app.add_url_rule("/api/action/rtb", view_func=self.route_action_rtb)
         self.app.add_url_rule("/api/action/land", view_func=self.route_action_land)
         self.app.add_url_rule("/api/action/disconnect", view_func=self.route_action_disconnect)
@@ -77,8 +77,8 @@ class MCWebServer:
             "clusters_to_explore" : self.mission.cluster_centres_to_explore,
             "detected" : [entity.to_dict() for entity in self.mission.detected]
         }
-        jsonify(ret)
-        return ret
+        
+        return jsonify(ret)
     
     def route_action_moveto(self) -> Tuple[Dict, int]:
         drone_id = request.args.get("drone_id", type=int, default=None)
@@ -97,20 +97,6 @@ class MCWebServer:
         
         return {}, 200
     
-    def route_action_search(self) -> Tuple[Dict, int]:
-        drone_id = request.args.get("drone_id", type=int, default=None)
-        lat = request.args.get("lat", type=float, default=None)
-        lon = request.args.get("lon", type=float, default=None)
-
-        if drone_id is None:
-            return {"error": "need drone_id"}, 400
-
-        if lat is None or lon is None:
-            return {"error": "need latitude/longitude parameters as float"}, 400
-        
-        # Place command in command queue
-        command_tup = (drone_id, DroneCommand_SEARCH_SECTOR(LatLon(lat, lon), None))
-        self.commands.put_nowait(command_tup)
         
         return {}, 200
     
@@ -165,7 +151,8 @@ class MCWebServer:
         return {}, 200
 
     def route_run_clustering(self):
-        cluster_centres = run_clustering(self.mission.hotspots)
+        cluster_centres = run_clustering(self.mission.hotspots) # cluster_centres: Dict[int, Tuple[Tuple[float,float], List[Tuple[float,float]]]]
+        # Each cluster center value is represented by a tuple: (centre latlon, list of latlon hotspots)
         self.mission.cluster_centres = cluster_centres
         self.mission.cluster_centres_to_explore = [cluster for cluster in cluster_centres.values()]
         return cluster_centres
@@ -174,7 +161,8 @@ class MCWebServer:
         """Run assignment on drones in drone state, cluster centers and command drones to search sector"""
         assignments = self.assigner.fit(self.mission.cluster_centres_to_explore, self.drone_states)
         for drone_id, cluster in assignments.items():
-            command_tup = (drone_id, DroneCommand_SEARCH_SECTOR(LatLon(cluster[0][0], cluster[0][1]), None))
+            hotspots_in_cluster = cluster
+            command_tup = (drone_id, DroneCommand_SEARCH_SECTOR(LatLon(cluster[0][0], cluster[0][1]), cluster[1]))
             self.commands.put_nowait(command_tup)
         return {}, 200        
 

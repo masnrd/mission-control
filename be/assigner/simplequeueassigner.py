@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from drone_utils import DroneMode
 from .interface import Assigner
@@ -14,7 +14,7 @@ class SimpleQueueAssigner(Assigner):
     def __init__(self):
         pass
 
-    def fit(self, cluster_centres_to_explore: List, drone_states: Dict) -> Dict:
+    def fit(self, cluster_centres_to_explore: List[Tuple], drone_states: Dict) -> Dict[int, Tuple]:
         """
         Run the assignment algorithm
         """

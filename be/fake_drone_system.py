@@ -15,7 +15,7 @@ from constants import HOME_POSITION
 
 from drone_utils import DroneId, DroneState, DroneMode, DroneCommand, DroneCommandId
 from maplib import LatLon
-from pathfinder import PathfinderState
+from pathfinder.pathfinder import N_RINGS_CLUSTER, PathfinderState, init_empty_prob_map, update_prob_map_w_hotspots
 
 DRONE_CYCLE_INTERVAL = 1
 DRONE_SPEED = 3  # In metres/s, UNTESTED.
@@ -30,9 +30,16 @@ def unpack_command(cmd: DroneCommand) -> Dict[str, Any]:
         coords = struct.unpack("!ff", cmd_data)
         ret["base_pos"] = LatLon(coords[0], coords[1])
     elif cmd_id == DroneCommandId.SEARCH_SECTOR:
-        coords = struct.unpack("!ff", cmd_data)
-        ret["sector_start_pos"] = LatLon(coords[0], coords[1])
-        ret["sector_prob_map"] = None  #TODO: decide how to encode prob_map for MC
+        sector_start_lat, sector_start_lon, num_hotspots = struct.unpack_from("!ffi", cmd_data, 0)
+        offset = struct.calcsize("!ffi")
+        hotspots = []
+        for _ in range(num_hotspots):
+            # For each hotspot, read a lat-lon pair
+            lat, lon = struct.unpack_from("!ff", cmd_data, offset)
+            hotspots.append((lat, lon))
+            offset += struct.calcsize("!ff")
+        ret["sector_start_pos"] = LatLon(sector_start_lat, sector_start_lon)
+        ret["hotspots"] = hotspots
     elif cmd_id == DroneCommandId.MOVE_TO:
         coords = struct.unpack("!ff", cmd_data)
         ret["goto_pos"] = LatLon(coords[0], coords[1])
@@ -141,7 +148,9 @@ class Drone:
                 target_pos = command["sector_start_pos"]
                 self.set_drone_target_pos(target_pos.lat, target_pos.lon)
                 with self._lock:
-                    self.pathfinder = PathfinderState(target_pos, None)
+                    prob_map = init_empty_prob_map(target_pos, N_RINGS_CLUSTER)
+                    prob_map = update_prob_map_w_hotspots(probability_map=prob_map, hotspots=command["hotspots"])
+                    self.pathfinder = PathfinderState(target_pos, prob_map)
                     self.drone_states[self.drone_id].simulated_path = self.pathfinder.simulated_path
         
         self.set_drone_last_command(drone_command)
