@@ -59,7 +59,6 @@ def update_prob_map_w_hotspots(probability_map: ProbabilityMap, hotspots: Tuple[
                     if hex_idx in probability_map:
                         delta_probability_map[hex_idx] = probability + delta_probability_map.get(hex_idx, 0)
                     else:
-                        print("Not in prob_map")
                         pass
     # Normalize the delta_probability_map
     total_delta_prob = sum(delta_probability_map.values())
@@ -153,6 +152,23 @@ class PathfinderState:
         cur_tup = (cur_pos.lat, cur_pos.lon)
         next_tup = self._pathfinder.find_next_step(cur_tup, self._prob_map)
         self._prob_map = update_probability_map(self._prob_map, next_tup, PROBABILITY_DECAY)
+
+
+        # TODO: GIF generation
+        # if self.step_count<30:
+        #     print("Saving image...")
+        #     import io
+        #     import folium
+        #     from pathfinder.viz import visualise_hex_dict_to_map
+        #     from PIL import Image
+        #     m = folium.Map(location=[1.340193432104185, 103.96245012087752], zoom_start=22)
+        #     visualise_hex_dict_to_map(self._prob_map, m, set())
+        #     vertices = h3.h3_to_geo_boundary(h3.geo_to_h3(next_tup[0], next_tup[1], DEFAULT_RESOLUTION))
+        #     folium.Polygon(locations=vertices, color="green", fill=False, fill_opacity=0.05).add_to(m)
+        #     img_data = m._to_png(5)
+        #     img = Image.open(io.BytesIO(img_data))
+        #     img.save(f'{self.step_count}.png')
+
         return LatLon(next_tup[0], next_tup[1])
 
     def get_simulated_path(self, cur_pos: LatLon) -> Dict[int, Dict]:
@@ -288,9 +304,7 @@ class BayesianHexSearch(PathFinder):
                 continue
             dist = distance_between_2_hexas(neighbour, max_hex_index)
             neighbour_prob = prob_map[neighbour]
-            # TODO: Test different parameters for this
             score = 1/(1+dist) * 100 + neighbour_prob * 10
-            # score = neighbour_prob * 10
 
             if score > highest_score:
                 best_neighbour = neighbour

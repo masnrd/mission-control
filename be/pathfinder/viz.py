@@ -3,6 +3,8 @@ import folium
 import os
 from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import glob
+from PIL import Image
 
 def gradient_color(value: float, min_value: float = 0, max_value: float = 2, greyscale=False):
     """
@@ -58,6 +60,41 @@ def visualise_hex_dict_to_map(hexagon_values: dict, m: folium.Map, casualty_loca
         else:
             folium.Polygon(locations=vertices, color=color,
                            fill=True, fill_opacity=0.005).add_to(m)
+
+def generate_gif(directory):
+    """Generate gif based on a list of numbered png"""
+    # Ensure the directory path ends with a slash
+    if not directory.endswith('/'): directory += '/'
+
+    # Gather all PNG images in the directory
+    png_files = sorted(glob.glob(f"{directory}*.png"))
+
+    # Debug print to check if PNG files are found
+    print(f'PNG Files: {png_files}')
+
+    if not png_files:
+        print("No PNG files found in the directory.")
+        return
+
+    # Create a list to hold the images
+    images = []
+
+    # Open each image and append to the list
+    for filename in png_files:
+        img = Image.open(filename).convert('RGBA')
+        images.append(img)
+
+    # Debug print to check the images list
+    print(f'Images: {images}, Length: {len(images)}')
+
+    # Define the output path for the GIF
+    output_gif_path = f"{directory}animated.gif"
+
+    # Save the images as a GIF
+    images[0].save(output_gif_path, save_all=True, append_images=images[1:], optimize=False, duration=200, loop=0)
+
+    print(f"Generated GIF saved at {output_gif_path}")
+
 
 def create_gif(output_filename: str, hexagon_map: dict, hexagon_values: list[dict],
                
@@ -191,3 +228,9 @@ def create_gif(output_filename: str, hexagon_map: dict, hexagon_values: list[dic
 
     for filename in filenames:
         os.remove(filename)
+
+if __name__ == "__main__":
+    current_working_directory = os.getcwd()
+
+    print(current_working_directory)
+    generate_gif("../gif/")
