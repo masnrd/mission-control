@@ -172,7 +172,7 @@ class PathfinderState:
         #     folium.Polygon(locations=vertices, color="green", fill=False, fill_opacity=0.05).add_to(m)
         #     img_data = m._to_png(5)
         #     img = Image.open(io.BytesIO(img_data))
-        #     img.save(f'{self.step_count}.png')
+        #     img.save(f'./gif/{self.step_count}.png')
 
         return LatLon(next_tup[0], next_tup[1])
 

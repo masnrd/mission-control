@@ -36,14 +36,12 @@ export default function Map({
       <MapContainer
         center={start_position}
         zoom={18}
-        minZoom={16}
-        maxZoom={30}
         scrollWheelZoom={true}
         ref={setMap}>
         <TileLayer
-          zoom={18}
+          minZoom={16}
+          maxZoom={21}
           maxNativeZoom={19}
-          maxZoom={30}
           attribution="&copy; OpenStreetMap contributors"
           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
           // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

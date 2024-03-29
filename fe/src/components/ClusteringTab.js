@@ -109,15 +109,13 @@ export default function ClusteringTab({
             </>
           ))}
           <FormControl fullWidth>
-            <InputLabel id="demo-simple-select-label">Age</InputLabel>
+            <InputLabel>Search Algorithm</InputLabel>
             <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
               value={pathAlgo}
               label="Search Algorithm"
               onChange={handleChange}>
-              <MenuItem value={"bayes"}>Bayes- Probability</MenuItem>
-              <MenuItem value={"spiral"}>Spiral - Exhaustive</MenuItem>
+              <MenuItem value={"bayes"}>Probabilistic (Bayes) - Min-Time Capture</MenuItem>
+              <MenuItem value={"spiral"}>Naive (Outward Spiral) - Guaranteed Capture</MenuItem>
             </Select>
           </FormControl>
           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
