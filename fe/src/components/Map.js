@@ -22,7 +22,7 @@ export default function Map({
   detectedEntities,
   setMap,
 }) {
-  const start_position = [1.3399775009363866, 103.96258672159254];
+  const start_position = [1.3410058770769826, 103.96272668990389];
 
   const addHotspot = (latlng) => {
     const url = "http://127.0.0.1:5000/hotspot/add";
@@ -43,7 +43,7 @@ export default function Map({
           maxZoom={21}
           maxNativeZoom={19}
           attribution="&copy; OpenStreetMap contributors"
-          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+          url="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
           // url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <AddHotspotOnClick onNewPoint={addHotspot} />
