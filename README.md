@@ -3,8 +3,7 @@
 ## Frontend Features
 
 1. View map
-   1. With h3 hexagon tiling representation overlay
-   2. Zoom into a specific long lat
+   1. Zoom into a specific long lat
 2. Individual drone slide in panel
    1. Drone info
    2. Battery
