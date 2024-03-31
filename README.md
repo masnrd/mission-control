@@ -11,23 +11,24 @@
    3. Status
    4. Location (Longitude , Latitude)
    5. Stage of Search and Rescue
-   6. Next action? (Since drones are independent, possible to also send projected new actions like a log of subsequent actions?)
+   6. Next action (Since drones are independent, possible to also send projected new actions like a log of subsequent actions?)
 3. Drone Manual Control
    1. Search Cluster - must have an associated cluster to search (i.e. given a cluster and its associated hotspots, search the hexagons - exhaustively?)
-   2. Return to Base
-   3. Move to location? (Longitude, Latitude)
-   4. Manual Control via QGC
+   3. Return to Base
+   4. Move to location? (Longitude, Latitude)
+   5. Manual Control (Emergency landing and Disconnect)
 4. Drone Summary Page
    1. List of all drones and info in individual drone panel (Refer 2.)
-5. Clustering Setup Page
+5. Search Algorithm Page
+   1. Selection alternative algorithm
+   2. View drone trajectory
+7. Clustering Setup Page
    1. Import clusters using csv
    2. Visualise clusters
    3. Approve/Disappove
    4. Manual cluster assignment (TODO: Criteria to check for valid clusters - maximum span of cluster)
-6. (TBC) Drone assignment UI feature to manually/automatically assign drones to specific clusters
+8. Drone assignment UI feature to manually/automatically assign drones to specific clusters
    1. Queue to visualise available drones
-   2. Queue to visualise pending clusters
-   3. (TBC) Progress search indicator for each cluster
 
 ### General
 
