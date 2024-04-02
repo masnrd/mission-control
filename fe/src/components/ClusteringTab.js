@@ -120,7 +120,7 @@ export default function ClusteringTab({
           </FormControl>
           <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
             <Button
-              onClick={assignForSearch(pathAlgo)}
+              onClick={() => assignForSearch(pathAlgo)}
               startIcon={<GpsFixedIcon />}
               variant="contained">
               Assign and Search
