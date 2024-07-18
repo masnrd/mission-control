@@ -3,3 +3,5 @@ flask-cors
 h3==3.7.6
 numpy==1.26.0
 pymap3d==3.0.1
+scipy==1.14.0
+folium==0.16.0

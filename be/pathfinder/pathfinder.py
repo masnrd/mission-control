@@ -301,8 +301,8 @@ class BayesianHexSearch(PathFinder):
 
         # Initialise variables to find the nest best neighbour
         path_to_max = h3.h3_line(curr_hexagon, max_hex_index)
-        print(f'Prob map: {prob_map}')
-        print(f'Path:{path_to_max}, current {h3.h3_to_geo(curr_hexagon)}, max: {h3.h3_to_geo(max_hex_index)}')
+        # print(f'Prob map: {prob_map}')
+        # print(f'Path:{path_to_max}, current {h3.h3_to_geo(curr_hexagon)}, max: {h3.h3_to_geo(max_hex_index)}')
         best_neighbour = path_to_max[1] if len(path_to_max)>1 else max_hex_index
         highest_score = 0
 
@@ -311,7 +311,7 @@ class BayesianHexSearch(PathFinder):
                 continue
             dist = distance_between_2_hexas(neighbour, max_hex_index)
             neighbour_prob = prob_map[neighbour]
-            score = 1/(1+dist) * 100 + neighbour_prob * 10
+            score = 1/(1+dist) * 2 + neighbour_prob * 1
 
             if score > highest_score:
                 best_neighbour = neighbour
