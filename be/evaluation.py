@@ -36,8 +36,6 @@ hotspots = [
     (1.3450968, 103.9611108)
 ]
 
-global victim_hexagons
-
 # Function to generate victims around hotspots using Gaussian distribution
 def generate_victims(n_victims: int, hotspots: List[Tuple[float, float]], boundary_pts: List[Tuple[float, float]]):
     hotspots_np = np.array(hotspots)
@@ -81,14 +79,6 @@ def create_zigzag_path(hexagons, hex_centers):
 
     return zigzag_path
 
-# Function to check if a victim is detected
-def check_if_victim_is_detected(location: Tuple[float, float], victim_hexagons: List[str]):
-    g = h3.geo_to_h3(location[0], location[1], DEFAULT_RESOLUTION)
-    if g in victim_hexagons:
-        return victim_hexagons.index(g)
-    else:
-        return None
-
 # Function to run the zigzag search
 def run_zigzag_search(boundary_pts: List[Tuple[float, float]], victim_hexagons: List[str], n_drones: int):
     
@@ -104,15 +94,12 @@ def run_zigzag_search(boundary_pts: List[Tuple[float, float]], victim_hexagons: 
     sorted_hexagons = sorted(hexagons, key=lambda h: (hex_centers[h][0], hex_centers[h][1]))
     zigzag_path = create_zigzag_path(sorted_hexagons, hex_centers)
     
-    step_count = [0 for _ in range(n_drones)]
     detected_history_base = {}
     
     for i in range(len(zigzag_path)):
-        detected = check_if_victim_is_detected(h3.h3_to_geo(zigzag_path[i]), victim_hexagons)
-        if detected:
-            if detected not in detected_history_base.keys():
-                detected_history_base[detected] = i
-    
+        for j in range(len(victim_hexagons)):
+            if victim_hexagons[j] == zigzag_path[i] and j not in detected_history_base:
+                detected_history_base[j] = i
     detected_divided = [step % (len(zigzag_path) / n_drones) for step in detected_history_base.values()]
     metrics = {
         'total_steps': len(zigzag_path),
@@ -171,23 +158,20 @@ def run_pathfinder_search(boundary_pts: List[Tuple[float, float]], victim_hexago
 
         path = []
         for i in range(MAX_NUMBER_STEPS):
-            # print(i)
             drone_current_pos[drone] = pathfinder.find_next_step(drone_current_pos[drone], prob_map)
             prob_map = update_probability_map(prob_map, drone_current_pos[drone], PROBABILITY_DECAY)
             if i%100==0: path.append(drone_current_pos[drone])
             step_count[drone] += 1
 
-            detected = check_if_victim_is_detected(drone_current_pos[drone], victim_hexagons)
-            if detected:
-                # Record the time step when the victim is detected
-                if detected not in detected_history.keys():
-                    detected_history[detected] = step_count[drone]
+            for j in range(len(victim_hexagons)):
+                if victim_hexagons[j] == h3.geo_to_h3(drone_current_pos[drone][0], drone_current_pos[drone][1], DEFAULT_RESOLUTION) and j not in detected_history:
+                    detected_history[j] = step_count[drone]
 
     metrics = {
         'total_steps': sum(step_count),
         'average_steps_per_drone': sum(step_count)/len(step_count),
         'victims_found': len(detected_history),
-        'average_steps_to_find_victims': sum(list(detected_history.values()))/len(detected_history)
+        'average_steps_to_find_victims': sum(list(detected_history.values()))/len(detected_history) if len(detected_history) > 0 else 100000000000
     }
     return metrics
 
